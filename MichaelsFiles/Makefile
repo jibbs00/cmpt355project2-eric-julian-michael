@@ -8,7 +8,7 @@ sample: main.c
 
 # use of wildcards to compile all object files
 %.o: %.c %.h
-	$(CC) $(CFLAGS) -c -o $@ $< -lm
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 # command to remove all unwanted files, object, and executables as well
 clean:
