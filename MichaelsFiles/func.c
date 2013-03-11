@@ -20,6 +20,7 @@ void _setupboard(char *filename)
     if(c == '\n'){
       x++;
       y = 0;
+      continue;
     }
     board[x][y] = c;
     y++;
