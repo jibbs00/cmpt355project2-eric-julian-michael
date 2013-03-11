@@ -3,7 +3,7 @@ SHELL=/bin/bash
 CC=gcc
 CFLAGS=-std=c99 -Wall -g
 
-sample: main.c
+sample: main.c func.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 # use of wildcards to compile all object files

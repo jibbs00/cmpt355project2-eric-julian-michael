@@ -1,11 +1,15 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include"func.h"
 
 int main(int argc, char *argv[])
 {
-
-  printf("hello world!\n");
-  printf("goodbye wordl!\n");
+  if(argv[1] != NULL){
+    _setupboard(argv[1]);
+  }
+  else{
+    printf("forgot the input file name!\n");
+  }
 
   return 0;
 }
