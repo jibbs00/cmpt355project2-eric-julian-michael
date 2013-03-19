@@ -11,5 +11,7 @@ int main(int argc, char *argv[])
     printf("forgot the input file name!\n");
   }
 
+  _testTree();
+
   return 0;
 }
