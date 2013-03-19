@@ -46,8 +46,7 @@ void _testTree()
 {
   /* create 3 lvls for the initial tree */
   /*first lvl, max's turn, initial state of board */
-  _createNode(board); //create initial node for test_tree_head
-  //current state = head at this point
+  _createNode(board); //create initial node for test_tree_head, current state = head at this point
 
   /*second lvl, min's turn, 4 states */
   /*(top left corner, (4,4), (5,5), bottom right corner) */
@@ -79,9 +78,30 @@ void _testTree()
   _createNode(new_state);
   _createState(2,0,new_state,current_state->state);
   _createNode(new_state);
-  current_state = current_state->next; //reset current state as the next child
-  /* (4,4) = (*/
-
+  /* (4,4) = (2,4), (4,2), (6,4), (4,6)*/
+  _createState(1,3,new_state,current_state->next->state);
+  _createNode(new_state);
+  _createState(3,1,new_state,current_state->next->state);
+  _createNode(new_state);
+  _createState(5,3,new_state,current_state->next->state);
+  _createNode(new_state);
+  _createState(3,5,new_state,current_state->next->state);
+  _createNode(new_state);
+  /* (5,5) = (3,5), (5,3), (5,7), (7,5) */
+  _createState(2,4,new_state,current_state->next->next->state);
+  _createNode(new_state);
+  _createState(4,2,new_state,current_state->next->next->state);
+  _createNode(new_state);
+  _createState(4,6,new_state,current_state->next->next->state);
+  _createNode(new_state);
+  _createState(6,4,new_state,current_state->next->next->state);
+  _createNode(new_state);
+  /* bottom right corner = (8,6), (6,8) */
+  _createState(7,5,new_state,current_state->next->next->next->state);
+  _createNode(new_state);
+  _createState(5,7,new_state,current_state->next->next->next->state);
+  _createNode(new_state);
+  
 
   /* print tree and clean up memory */
   _printTesttree(test_tree_head);
@@ -116,6 +136,7 @@ void _createNode(char state[][BOARD_SIZE])
       node *cur = prev->next;
       for(;(prev != NULL && cur != NULL);prev = prev->next, cur = cur->next);
       prev->next = new_node;
+      printf("fuck\n");
     }
     else{
       current_state->child_head = new_node;
