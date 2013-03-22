@@ -32,9 +32,18 @@ void _setupboard(char *filename);
 /* function builds a test tree using the global tree head node 
    (NOTE: tree has 3 lvls (max, min, terminal) */
 void _testTree();
-void _createNode(char state[][BOARD_SIZE]);
+void _createNode(int next, char state[][BOARD_SIZE]);
 void _createState(int x, int y, char new[][BOARD_SIZE], char state[][BOARD_SIZE]);
 void _copyBoard(node *n,char state[][BOARD_SIZE]);
 void _printTesttree(node *head);
 void _cleanTesttree(node *head);
+
+
+
+void _MIX_MAX(char state[][BOARD_SIZE]);
+
+
+
+
+
 #endif

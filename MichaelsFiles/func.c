@@ -29,15 +29,6 @@ void _setupboard(char *filename)
     y++;
   }
   
-  /*print initial board */
-  printf(" ---------- INITIAL STATE ---------- \n");
-  for(int x = 0; x < 8; x++){
-    for(int y = 0; y < 8; y++){
-      printf("%c",board[x][y]);
-    }
-    printf("\n");
-  }
-  
   fclose(fh);
 }
 
@@ -46,7 +37,7 @@ void _testTree()
 {
   /* create 3 lvls for the initial tree */
   /*first lvl, max's turn, initial state of board */
-  _createNode(board); //create initial node for test_tree_head, current state = head at this point
+  _createNode(0,board); //create initial node for test_tree_head, current state = head at this point
 
   /*second lvl, min's turn, 4 states */
   /*(top left corner, (4,4), (5,5), bottom right corner) */
@@ -56,51 +47,54 @@ void _testTree()
 
   /* top left corner */
   _createState(0,0,new_state,current_state->state);
-  _createNode(new_state);
+  _createNode(0,new_state);
   /* (4,4) */
   _createState(3,3,new_state,current_state->state);
-  _createNode(new_state);
+  _createNode(0,new_state);
   /* (5,5) */
   _createState(4,4,new_state,current_state->state);
-  _createNode(new_state);
+  _createNode(0,new_state);
   /* bottom right corner */
   _createState(7,7,new_state,current_state->state);
-  _createNode(new_state);
+  _createNode(0,new_state);
   
   /*thrid lvl, middle states have 4 children each, corners have 2 */
-  /*NOTE: current state should not point to child_head of top left corner node */
-  current_state = current_state->child_head; //reset current state
+  /*NOTE: current state should point to child_head of top left corner node */
+  current_state = current_state->child_head; //reset current state to firsts lvl's child_head
   
   /*NOTE: x - 1, and y - 1 as array range from 0 -7, not 1 - 8 */
 
   /* top left corner children = (1,3), (3,1) */
   _createState(0,2,new_state,current_state->state);
-  _createNode(new_state);
+  _createNode(0,new_state);
   _createState(2,0,new_state,current_state->state);
-  _createNode(new_state);
+  _createNode(0,new_state);
+
   /* (4,4) = (2,4), (4,2), (6,4), (4,6)*/
-  _createState(1,3,new_state,current_state->next->state);
-  _createNode(new_state);
-  _createState(3,1,new_state,current_state->next->state);
-  _createNode(new_state);
-  _createState(5,3,new_state,current_state->next->state);
-  _createNode(new_state);
-  _createState(3,5,new_state,current_state->next->state);
-  _createNode(new_state);
+  _createState(1,3,new_state,current_state->next->state); //skip to next as current_state not reset
+  _createNode(1, new_state);  //reset current_state to next parent
+  _createState(3,1,new_state,current_state->state);
+  _createNode(0,new_state);
+  _createState(5,3,new_state,current_state->state);
+  _createNode(0,new_state);
+  _createState(3,5,new_state,current_state->state);
+  _createNode(0,new_state);
+
   /* (5,5) = (3,5), (5,3), (5,7), (7,5) */
-  _createState(2,4,new_state,current_state->next->next->state);
-  _createNode(new_state);
-  _createState(4,2,new_state,current_state->next->next->state);
-  _createNode(new_state);
-  _createState(4,6,new_state,current_state->next->next->state);
-  _createNode(new_state);
-  _createState(6,4,new_state,current_state->next->next->state);
-  _createNode(new_state);
+  _createState(2,4,new_state,current_state->next->state); //skip to next as current_state not reset
+  _createNode(1, new_state); //reset current-state to next parent
+  _createState(4,2,new_state,current_state->state);
+  _createNode(0,new_state);
+  _createState(4,6,new_state,current_state->state);
+  _createNode(0,new_state);
+  _createState(6,4,new_state,current_state->state);
+  _createNode(0,new_state);
+
   /* bottom right corner = (8,6), (6,8) */
-  _createState(7,5,new_state,current_state->next->next->next->state);
-  _createNode(new_state);
-  _createState(5,7,new_state,current_state->next->next->next->state);
-  _createNode(new_state);
+  _createState(7,5,new_state,current_state->next->state); //skip to next as current_state not reset
+  _createNode(1, new_state); //reset current-state to next parent
+  _createState(5,7,new_state,current_state->state);
+  _createNode(0,new_state);
   
 
   /* print tree and clean up memory */
@@ -109,7 +103,7 @@ void _testTree()
 
 }
 
-void _createNode(char state[][BOARD_SIZE])
+void _createNode(int next, char state[][BOARD_SIZE])
 {
   /* function creates a new board and sets the fields */
   node *new_node = malloc(sizeof(node));
@@ -129,23 +123,32 @@ void _createNode(char state[][BOARD_SIZE])
     current_state = test_tree_head;
   }
   else{
-    new_node->parent = current_state;
+    
     /*add as child to parent node */
     node *prev = current_state->child_head;
     if(prev != NULL){
       node *cur = prev->next;
-      for(;(prev != NULL && cur != NULL);prev = prev->next, cur = cur->next);
+      for(;(cur != NULL);prev = prev->next, cur = cur->next);
       prev->next = new_node;
-      printf("fuck\n");
     }
     else{
       current_state->child_head = new_node;
     }
+
+    /* stupid hack to connect child nodes to the proper parent, and 
+       set the parents child_list */
+    if(next == 1){
+      //reset current_state to next node in parent list
+      current_state = current_state->next;
+      //set current_state child head to previous (to connect all children among parent list
+      current_state->child_head = new_node;
+    }
+
+    new_node->parent = current_state;  
     new_node->next = NULL;
-    
+    new_node->child_head = NULL;
   }
-  
- 
+   
 }
 
 void _createState(int x, int y, char new[][BOARD_SIZE], char state[][BOARD_SIZE])
@@ -167,7 +170,6 @@ void _copyBoard(node *n, char state[][BOARD_SIZE])
       n->state[x][y] = state[x][y];
     }
   }
-
 }
 
 
@@ -232,5 +234,19 @@ void _cleanTesttree(node *head)
       free(temp);
 
   }
+
+}
+
+
+
+/*** MIN-MAX ALGORITHM IMPLEMENTATION ***/
+void _MIX_MAX(char state[][BOARD_SIZE])
+{
+  //***function combines MAX-DECISION and MAX-VALUE psuedo-code
+  //input: current state of the game
+  
+
+
+
 
 }
