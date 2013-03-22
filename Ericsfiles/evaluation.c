@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 int utility ( int board[8][8], char fcolor, char ecolor);
-
+//used for testing ignore 
 int main(){
   char c='B';
   const int size=8;
@@ -23,13 +23,14 @@ int main(){
 
 }
 
-
+//will evaluate the board and return a number based on the
+// number of moves an enemy has
 int utility ( int board[8][8], char fcolor, char ecolor ) {
   int count=0, counter=0;
   int size=8;
   int tc=0;
    printf ("%c", color);
- 
+   //goes through the board horizontally
  while(count<size){
      while(counter<size){
        if(counter+2<=size){
@@ -44,7 +45,7 @@ int utility ( int board[8][8], char fcolor, char ecolor ) {
      count++;}
  count=0;
  counter=0;
-
+ //goes through the board vertically
  while(count<size){
    while(counter<size){
      if(count+2<=size){
