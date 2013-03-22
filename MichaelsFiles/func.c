@@ -66,34 +66,46 @@ void _testTree()
 
   /* top left corner children = (1,3), (3,1) */
   _createState(0,2,new_state,current_state->state);
+  _playerMove(0,0,0,2,new_state); //zero all slots between moves
   _createNode(0,new_state);
   _createState(2,0,new_state,current_state->state);
+  _playerMove(0,0,2,0,new_state); //zero all slots between moves
   _createNode(0,new_state);
 
   /* (4,4) = (2,4), (4,2), (6,4), (4,6)*/
   _createState(1,3,new_state,current_state->next->state); //skip to next as current_state not reset
+  _playerMove(3,3,1,3,new_state); //zero all slots between moves
   _createNode(1, new_state);  //reset current_state to next parent
   _createState(3,1,new_state,current_state->state);
+  _playerMove(3,3,3,1,new_state); //zero all slots between moves
   _createNode(0,new_state);
   _createState(5,3,new_state,current_state->state);
+  _playerMove(3,3,5,3,new_state); //zero all slots between moves
   _createNode(0,new_state);
   _createState(3,5,new_state,current_state->state);
+  _playerMove(3,3,3,5,new_state); //zero all slots between moves
   _createNode(0,new_state);
 
   /* (5,5) = (3,5), (5,3), (5,7), (7,5) */
   _createState(2,4,new_state,current_state->next->state); //skip to next as current_state not reset
+  _playerMove(4,4,2,4,new_state); //zero all slots between moves
   _createNode(1, new_state); //reset current-state to next parent
   _createState(4,2,new_state,current_state->state);
+  _playerMove(4,4,4,2,new_state); //zero all slots between moves
   _createNode(0,new_state);
   _createState(4,6,new_state,current_state->state);
+  _playerMove(4,4,4,6,new_state); //zero all slots between moves
   _createNode(0,new_state);
   _createState(6,4,new_state,current_state->state);
+  _playerMove(4,4,6,4,new_state); //zero all slots between moves
   _createNode(0,new_state);
 
   /* bottom right corner = (8,6), (6,8) */
   _createState(7,5,new_state,current_state->next->state); //skip to next as current_state not reset
+  _playerMove(7,7,7,5,new_state); //zero all slots between moves
   _createNode(1, new_state); //reset current-state to next parent
   _createState(5,7,new_state,current_state->state);
+  _playerMove(7,7,5,7,new_state); //zero all slots between moves
   _createNode(0,new_state);
   
 
@@ -151,7 +163,7 @@ void _createNode(int next, char state[][BOARD_SIZE])
    
 }
 
-void _createState(int x, int y, char new[][BOARD_SIZE], char state[][BOARD_SIZE])
+void _createState(int x1, int y1, char new[][BOARD_SIZE], char state[][BOARD_SIZE])
 {
   for(int i = 0; i < BOARD_SIZE; i++){
     for(int j = 0; j < BOARD_SIZE; j++){
@@ -159,7 +171,7 @@ void _createState(int x, int y, char new[][BOARD_SIZE], char state[][BOARD_SIZE]
     }
   }
   
-  new[x][y] = '0';
+  new[x1][y1] = '0';
 }
 
 void _copyBoard(node *n, char state[][BOARD_SIZE])
@@ -233,6 +245,37 @@ void _cleanTesttree(node *head)
 
       free(temp);
 
+  }
+
+}
+
+
+
+void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]){
+  /*function finds an empty point, and determines if there
+    is another mepty point on the same horizontal or vertical line,
+    and then empties all the slots between theose two ponts (gets correct state)*/
+
+  if(x1 == x2 && y1 < y2){
+    /* loop from (x1,y1) right on the same row */
+    for(; y1 <= y2; y1++){
+      state[x1][y1] = 'O';
+    }
+  }
+  else if(x1 == x2 && y1 > y2){
+    for(; y1 >= y2; y1--){
+      state[x1][y1] = 'O';
+    }
+  }
+  else if(y1 == y1 && x1 < x2){
+    for(; x1 <= x2; x1++){
+      state[x1][y1] = 'O';
+    }
+  }
+  else if( y1 == y2 && x1 > x2){
+    for(; x1 >= x2; x1--){
+      state[x1][y1] = 'O';
+    }
   }
 
 }
