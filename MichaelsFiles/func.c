@@ -283,7 +283,7 @@ void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]){
 //will evaluate the board and return a number based on the
 //number of moves an enemy has
 int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
-  int count=0, counter=0;
+  int count = 0, counter = 0;
   int size=BOARD_SIZE;
   int tc=0;
    
@@ -293,16 +293,24 @@ int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
        if(counter+2<=size){
 	 if((ecolor==board[count][counter])
 	    && (fcolor==board[count][counter+1])
-	    && (board[count][counter+2]=='O')){ tc=tc+1; }
+	    && (board[count][counter+2]=='O'))
+	   { 
+	     tc=tc+1; 
+	   }
        }
        if(counter-2>=0){
-	    if(ecolor==board[count][counter]&&fcolor==board[count][counter-1]&&board[count][counter-2]=='O'){tc=tc+1;}
+	 if((ecolor==board[count][counter])
+	    && (fcolor==board[count][counter-1])
+	    && (board[count][counter-2]=='O')) 
+	   {
+	     tc=tc+1;
+	   }
        }
-       printf("count: %d counter: %d\n",count,counter);
-       //printf ( "%c", board[count][counter]);
+       //printf("count: %d counter: %d\n",count,counter);
        counter++;
      }
-     count++;
+     counter=0;
+    count++;
  }
 
  count=0;
@@ -311,18 +319,29 @@ int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
  while(count<size){
    while(counter<size){
      if(count+2<=size){
-        if(fcolor==board[counter][count]&&ecolor==board[counter][count+1]&&board[counter][count+2]=='O'){tc=tc+1;}
+       if((fcolor==board[counter][count])
+	  && (ecolor==board[counter][count+1])
+	  && (board[counter][count+2]=='O'))
+	 {
+	   tc=tc+1;
+	 }
      }
      if(count-2>=0){
-        if(fcolor==board[counter][count]&&ecolor==board[counter][count-1]&&board[counter][count-2]=='O'){tc=tc+1;}
+       if((fcolor==board[counter][count])
+	  && (ecolor==board[counter][count-1])
+	  && (board[counter][count-2]=='O'))
+	 {
+	   tc=tc+1;
+	 }
      }
 
-     printf("count: %d counter: %d\n",count,counter);
+     //printf("count: %d counter: %d\n",count,counter);
      counter++;
    }
+   counter=0;
    count++;
  }
-
+ 
  return tc;
 }
 
