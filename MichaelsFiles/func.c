@@ -107,7 +107,6 @@ void _testTree()
   _createState(5,7,new_state,current_state->state);
   _playerMove(7,7,5,7,new_state); //zero all slots between moves
   _createNode(0,new_state);
-  
 
   /* print tree and clean up memory */
   _printTesttree(test_tree_head);
@@ -171,7 +170,7 @@ void _createState(int x1, int y1, char new[][BOARD_SIZE], char state[][BOARD_SIZ
     }
   }
   
-  new[x1][y1] = '0';
+  new[x1][y1] = 'O';
 }
 
 void _copyBoard(node *n, char state[][BOARD_SIZE])
@@ -196,6 +195,10 @@ void _printTesttree(node *head)
       printf(" ---------- LEVEL %d ---------- \n",lvl);
       printf(" UTILITY VAL: %d\n",head->utility_val);
       printf(" STATE:\n");
+
+      //TEST MIN MAX FOR PRINTING
+      _MIN_MAX(itr->state);
+
       for(int x = 0; x < BOARD_SIZE; x++){
 	for(int y = 0; y < BOARD_SIZE; y++){
 	  printf("%c",itr->state[x][y]);
@@ -249,7 +252,7 @@ void _cleanTesttree(node *head)
 
 }
 
-
+/* ---------------------------------------------------------------------------------------- */
 
 void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]){
   /*function finds an empty point, and determines if there
@@ -258,36 +261,123 @@ void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]){
 
   if(x1 == x2 && y1 < y2){
     /* loop from (x1,y1) right on the same row */
-    for(; y1 <= y2; y1++){
+    for(; y1 <= y2; y1++)
       state[x1][y1] = 'O';
-    }
   }
   else if(x1 == x2 && y1 > y2){
-    for(; y1 >= y2; y1--){
+    for(; y1 >= y2; y1--)
       state[x1][y1] = 'O';
-    }
   }
   else if(y1 == y1 && x1 < x2){
-    for(; x1 <= x2; x1++){
+    for(; x1 <= x2; x1++)
       state[x1][y1] = 'O';
-    }
   }
   else if( y1 == y2 && x1 > x2){
-    for(; x1 >= x2; x1--){
+    for(; x1 >= x2; x1--)
       state[x1][y1] = 'O';
-    }
   }
 
 }
 
 
+//will evaluate the board and return a number based on the
+//number of moves an enemy has
+int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
+  int count = 0, counter = 0;
+  int size=BOARD_SIZE;
+  int tc=0;
+   
+ //goes through the board horizontally
+ while(count<size){
+     while(counter<size){
+       if(counter+2<=size){
+	 if((ecolor==board[count][counter])
+	    && (fcolor==board[count][counter+1])
+	    && (board[count][counter+2]=='O'))
+	   { 
+	     tc=tc+1; 
+	   }
+       }
+       if(counter-2>=0){
+	 if((ecolor==board[count][counter])
+	    && (fcolor==board[count][counter-1])
+	    && (board[count][counter-2]=='O')) 
+	   {
+	     tc=tc+1;
+	   }
+       }
+       //printf("count: %d counter: %d\n",count,counter);
+       counter++;
+     }
+     counter=0;
+    count++;
+ }
+
+ count=0;
+ counter=0;
+ //goes through the board vertically
+ while(count<size){
+   while(counter<size){
+     if(count+2<=size){
+       if((fcolor==board[counter][count])
+	  && (ecolor==board[counter][count+1])
+	  && (board[counter][count+2]=='O'))
+	 {
+	   tc=tc+1;
+	 }
+     }
+     if(count-2>=0){
+       if((fcolor==board[counter][count])
+	  && (ecolor==board[counter][count-1])
+	  && (board[counter][count-2]=='O'))
+	 {
+	   tc=tc+1;
+	 }
+     }
+
+     //printf("count: %d counter: %d\n",count,counter);
+     counter++;
+   }
+   counter=0;
+   count++;
+ }
+ 
+ return tc;
+}
 
 /*** MIN-MAX ALGORITHM IMPLEMENTATION ***/
-void _MIX_MAX(char state[][BOARD_SIZE])
+void _MIN_MAX(char state[][BOARD_SIZE])
 {
   //***function combines MAX-DECISION and MAX-VALUE psuedo-code
   //input: current state of the game
   
+  //Terminal test consists of evaluating the current state, if the current
+  //state yields no possible moves for the enemy (returns zero) then the current
+  //player has won the game, if not continue
+
+  //**** TEST TO GET NUMBER OF MOVES LEFT FOR WHITE, MAXIMIZE BLACK
+  char MAX = 'B';
+  char MIN = 'W';
+
+  int eval = evaluation(MAX,MIN,state);
+  
+  if(MAX == 'B'){
+    //multiple by -1 if loooking for MAX value as will reurn max value less than
+    //zero, so multiple by -1 to get positive integer
+    eval *= -1;
+  }
+  //else if looking for MIN value, eval will be the closet value to 0
+  printf("Number of moves left for enemy: %d\n",eval);
+  //if value is 0, means black has won the game, else print the moves left
+  if(eval == 0){
+    printf("you've won Black!!!\n");
+  }
+  else{
+    printf("The number of moves left for %c: %d\n",MIN,eval);
+  }
+
+
+
 
 
 

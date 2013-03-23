@@ -24,7 +24,7 @@ int main(){
 }
 
 //will evaluate the board and return a number based on the
-// number of moves an enemy has
+//number of moves an enemy has
 int utility ( int board[8][8], char fcolor, char ecolor ) {
   int count=0, counter=0;
   int size=8;

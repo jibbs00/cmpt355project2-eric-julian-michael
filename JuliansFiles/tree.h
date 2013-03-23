@@ -9,11 +9,13 @@
 
 #include "linked_list.h"
 
+/* A tree node */
 typedef struct _tnode {
-    char ** state;
-    struct _tnode * parent;
-    LinkedList * children;
+    char ** state;          /**< current state */
+    struct _tnode * parent; /**< parent node */
+    LinkedList * children;  /**< list of children */
 } TNode;
+
 
 TNode * create_node( char ** state, TNode * parent );
 void delete_node( TNode ** root );

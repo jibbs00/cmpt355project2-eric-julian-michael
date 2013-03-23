@@ -29,7 +29,13 @@ extern char board[BOARD_SIZE][BOARD_SIZE];
 /* function to initialize the board by reading in values from a file */
 void _setupboard(char *filename);
 
+int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]);
+
 void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]);
+
+
+void _MIN_MAX(char state[][BOARD_SIZE]);
+
 
 /* function builds a test tree using the global tree head node 
    (NOTE: tree has 3 lvls (max, min, terminal) */
@@ -39,13 +45,6 @@ void _createState(int x, int y1, char new[][BOARD_SIZE], char state[][BOARD_SIZE
 void _copyBoard(node *n,char state[][BOARD_SIZE]);
 void _printTesttree(node *head);
 void _cleanTesttree(node *head);
-
-
-
-void _MIX_MAX(char state[][BOARD_SIZE]);
-
-
-
 
 
 #endif
