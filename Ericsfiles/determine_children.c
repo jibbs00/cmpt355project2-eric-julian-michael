@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+void transitionstate(node *ptr, char action[][]);
 void copyparenttochild(node *parent, node *child){
   int count=0;
   int counter=0;
@@ -19,8 +19,9 @@ void determine_child(node *parent, char enemy, char friendly){
   const int size=8;
   int spot[2];
   int counter=0;
-  node *ptr;
-  parent->child_head=ptr
+  node *ptr, *first;
+  parent->child_head=first;
+  ptr=first;
   //checks for children horizontally
   while(count<size){
 	while(counter<size){
@@ -29,6 +30,7 @@ void determine_child(node *parent, char enemy, char friendly){
 		       spot[0]=count;
 		       spot[1]=counter;
 		       ptr = malloc( sizeof(node) );
+		       copyparenttochild(parent, ptr);
 		       }
 	  }
 	     if(counter-2>=0){

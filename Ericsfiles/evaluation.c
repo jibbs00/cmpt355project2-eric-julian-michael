@@ -40,7 +40,7 @@ int utility ( int board[8][8], char fcolor, char ecolor ) {
 	    if(ecolor==board[count][counter]&&fcolor==board[count][counter-1]&&board[count][counter-2]=='0'){tc=tc+1;}
        }
 
-           printf ( "%c", board[count][counter]);
+       // printf ( "%c", board[count][counter]);
            counter=counter+1;}
      count++;}
  count=0;
