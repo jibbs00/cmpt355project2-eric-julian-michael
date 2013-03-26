@@ -25,12 +25,39 @@ int main(){
 
 //will evaluate the board and return a number based on the
 //number of moves an enemy has
-int utility ( int board[8][8], char fcolor, char ecolor ) {
+int utility ( char board[8][8], char fcolor, char ecolor ) {
   int count=0, counter=0;
   int size=8;
+  int checker=0;
   int tc=0;
-   printf ("%c", color);
+  int four=4;
+   printf ("%c", color;
+	   //checks if it is the first or second move
+	   while(count<size){
+	       while(counter<size){
+		    if(board[count][counter]=='O'){checker++;}
+		    counter++;
+	       }
+	     counter=0;
+	     count++;
+	   }
+	   count=0;
+	   counter=0;
+	   if(checker==0)return 4;
+	   if(checker==1){
+	     while(count<size){
+	          while(counter<size){
+		       if(board[count][counter]=='O'){
+			    if(count==0||count==7){return 2;}
+			    else return 4;
+
+		       }
+		       counter++;
+		  }
+	     counter=0;
+	     count++;}
    //goes through the board horizontally
+	   if(checker>1){
  while(count<size){
      while(counter<size){
        if(counter+2<=size){
@@ -40,8 +67,9 @@ int utility ( int board[8][8], char fcolor, char ecolor ) {
 	    if(ecolor==board[count][counter]&&fcolor==board[count][counter-1]&&board[count][counter-2]=='0'){tc=tc+1;}
        }
 
-           printf ( "%c", board[count][counter]);
+       // printf ( "%c", board[count][counter]);
            counter=counter+1;}
+     counter=0;
      count++;}
  count=0;
  counter=0;
@@ -55,6 +83,8 @@ int utility ( int board[8][8], char fcolor, char ecolor ) {
         if(fcolor==board[counter][count]&&ecolor==board[counter][count-1]&&board[counter][count-2]=='0'){tc=tc+1;}
      }
 	counter++;}
+   counter=0;
    count++;}
+}
  return tc;
 }
