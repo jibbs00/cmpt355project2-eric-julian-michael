@@ -4,8 +4,6 @@
 #include"func.h"
 #include"tree.h"
 
-extern node *tree_head;
-
 node *current_state;
 node *test_tree_head = NULL;
 
@@ -249,7 +247,6 @@ void _cleanTesttree(node *head)
       }
 
       free(temp);
-
   }
 
 }
@@ -285,33 +282,40 @@ void determine_child(node *parent, char enemy, char friendly){
   int count = 0, counter = 0;
   int spot[2];
   node *ptr;
-  parent->child_head = ptr;
+
   //checks for children horizontally
   while(count < BOARD_SIZE){
     while(counter < BOARD_SIZE){
-      if(counter + 2 <= BOARD_SIZE){
+      if(counter + 2 < BOARD_SIZE){
 	if((enemy == parent->state[count][counter]) 
 	   && (friendly == parent->state[count][counter+1])
 	   && (parent->state[count][counter+2] == '0')){
 	      spot[0]=count;
 	      spot[1]=counter;
-	      ptr = malloc( sizeof(node) );
-	      if(ptr == NULL){
-		printf("malloc failed: determine_child\n");
-		exit(EXIT_FAILURE);
-	      }
-	      memset(ptr,0,sizeof(node));
-	}
+	      
+	      for(int x = 0; x < BOARD_SIZE; x++){
+		for(int y = 0; y < BOARD_SIZE; y++){
 
-	if((counter - 2) >= 0){
-	  if((enemy == parent->state[count][counter])
-	     && (friendly == parent->state[count][counter-1])
-	     && (parent->state[count][counter-2] == '0')){
-	        spot[0]=count;
-	        spot[1]=counter;
-	  }
+		}
+	      }
+
+	      
+
 	}
       }
+
+      if((counter - 2) >= 0){
+	if((enemy == parent->state[count][counter])
+	   && (friendly == parent->state[count][counter-1])
+	   && (parent->state[count][counter-2] == '0')){
+	      spot[0]=count;
+	      spot[1]=counter;
+	  
+
+	}
+
+      }
+      
 
       printf ( "%c", parent->state[count][counter]);
       counter = counter+1;

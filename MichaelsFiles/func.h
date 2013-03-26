@@ -3,7 +3,6 @@
 #define _KOHANE_H_
 
 #define BOARD_SIZE 8
-#define TREE_DEPTH 3
 
 /* min-max node structure */
 typedef struct mm_node{
