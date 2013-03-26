@@ -7,7 +7,7 @@ void applymove(node *parent, bool removeone, int move[]){
   char startingcolor;
   count=move[0];
   counter=move[1];
-  startingcolor=board[count][counter];
+  startingcolor=parent->state[count][counter];
   parent->state[count][counter]='O';
   if(removeone==true)return;
   //checks to see if moving along same row and applies move if it is  
@@ -136,11 +136,10 @@ while(counter<size){
 	     }
 
 
-    }}
-
-    
-void  main(){
-
-  printf"hello world";
-  
+	     count++; }
+	count=0;
+	counter++;
 }
+
+}   
+
