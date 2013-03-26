@@ -2,10 +2,12 @@
 #include<stdio.h>
 #include<string.h>
 #include"func.h"
+#include"tree.h"
 
+extern node *tree_head;
+
+node *current_state;
 node *test_tree_head = NULL;
-node *tree_head = NULL;
-node *current_state = NULL;
 
 char board[BOARD_SIZE][BOARD_SIZE];
 
@@ -58,54 +60,54 @@ void _testTree()
   _createState(7,7,new_state,current_state->state);
   _createNode(0,new_state);
   
-  /*thrid lvl, middle states have 4 children each, corners have 2 */
+  /*third lvl, middle states have 4 children each, corners have 2 */
   /*NOTE: current state should point to child_head of top left corner node */
   current_state = current_state->child_head; //reset current state to firsts lvl's child_head
   
   /*NOTE: x - 1, and y - 1 as array range from 0 -7, not 1 - 8 */
 
-  /* top left corner children = (1,3), (3,1) */
-  _createState(0,2,new_state,current_state->state);
-  _playerMove(0,0,0,2,new_state); //zero all slots between moves
+  /* top left corner children = (1,2), (2,1) */
+  _createState(0,1,new_state,current_state->state);
+  _playerMove(0,0,0,1,new_state); //zero all slots between moves
   _createNode(0,new_state);
-  _createState(2,0,new_state,current_state->state);
-  _playerMove(0,0,2,0,new_state); //zero all slots between moves
+  _createState(1,0,new_state,current_state->state);
+  _playerMove(0,0,1,0,new_state); //zero all slots between moves
   _createNode(0,new_state);
 
-  /* (4,4) = (2,4), (4,2), (6,4), (4,6)*/
-  _createState(1,3,new_state,current_state->next->state); //skip to next as current_state not reset
-  _playerMove(3,3,1,3,new_state); //zero all slots between moves
+  /* (4,4) = (3,4), (4,3), (5,4), (4,5)*/
+  _createState(2,3,new_state,current_state->next->state); //skip to next as current_state not reset
+  _playerMove(3,3,2,3,new_state); //zero all slots between moves
   _createNode(1, new_state);  //reset current_state to next parent
-  _createState(3,1,new_state,current_state->state);
-  _playerMove(3,3,3,1,new_state); //zero all slots between moves
+  _createState(3,2,new_state,current_state->state);
+  _playerMove(3,3,3,2,new_state); //zero all slots between moves
   _createNode(0,new_state);
-  _createState(5,3,new_state,current_state->state);
-  _playerMove(3,3,5,3,new_state); //zero all slots between moves
+  _createState(4,3,new_state,current_state->state);
+  _playerMove(3,3,4,3,new_state); //zero all slots between moves
   _createNode(0,new_state);
-  _createState(3,5,new_state,current_state->state);
-  _playerMove(3,3,3,5,new_state); //zero all slots between moves
-  _createNode(0,new_state);
-
-  /* (5,5) = (3,5), (5,3), (5,7), (7,5) */
-  _createState(2,4,new_state,current_state->next->state); //skip to next as current_state not reset
-  _playerMove(4,4,2,4,new_state); //zero all slots between moves
-  _createNode(1, new_state); //reset current-state to next parent
-  _createState(4,2,new_state,current_state->state);
-  _playerMove(4,4,4,2,new_state); //zero all slots between moves
-  _createNode(0,new_state);
-  _createState(4,6,new_state,current_state->state);
-  _playerMove(4,4,4,6,new_state); //zero all slots between moves
-  _createNode(0,new_state);
-  _createState(6,4,new_state,current_state->state);
-  _playerMove(4,4,6,4,new_state); //zero all slots between moves
+  _createState(3,4,new_state,current_state->state);
+  _playerMove(3,3,3,4,new_state); //zero all slots between moves
   _createNode(0,new_state);
 
-  /* bottom right corner = (8,6), (6,8) */
-  _createState(7,5,new_state,current_state->next->state); //skip to next as current_state not reset
-  _playerMove(7,7,7,5,new_state); //zero all slots between moves
+  /* (5,5) = (4,5), (5,4), (5,6), (6,5) */
+  _createState(3,4,new_state,current_state->next->state); //skip to next as current_state not reset
+  _playerMove(4,4,3,4,new_state); //zero all slots between moves
   _createNode(1, new_state); //reset current-state to next parent
-  _createState(5,7,new_state,current_state->state);
-  _playerMove(7,7,5,7,new_state); //zero all slots between moves
+  _createState(4,3,new_state,current_state->state);
+  _playerMove(4,4,4,3,new_state); //zero all slots between moves
+  _createNode(0,new_state);
+  _createState(4,5,new_state,current_state->state);
+  _playerMove(4,4,4,5,new_state); //zero all slots between moves
+  _createNode(0,new_state);
+  _createState(5,4,new_state,current_state->state);
+  _playerMove(4,4,5,4,new_state); //zero all slots between moves
+  _createNode(0,new_state);
+
+  /* bottom right corner = (8,7), (7,8) */
+  _createState(7,6,new_state,current_state->next->state); //skip to next as current_state not reset
+  _playerMove(7,7,7,6,new_state); //zero all slots between moves
+  _createNode(1, new_state); //reset current-state to next parent
+  _createState(6,7,new_state,current_state->state);
+  _playerMove(7,7,6,7,new_state); //zero all slots between moves
   _createNode(0,new_state);
 
   /* print tree and clean up memory */
@@ -196,8 +198,8 @@ void _printTesttree(node *head)
       printf(" UTILITY VAL: %d\n",head->utility_val);
       printf(" STATE:\n");
 
-      //TEST MIN MAX FOR PRINTING
-      _MIN_MAX(itr->state);
+      //TEST MAX FOR PRINTING
+      _MAX(itr->state);
 
       for(int x = 0; x < BOARD_SIZE; x++){
 	for(int y = 0; y < BOARD_SIZE; y++){
@@ -279,6 +281,51 @@ void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]){
 
 }
 
+void determine_child(node *parent, char enemy, char friendly){
+  int count = 0, counter = 0;
+  int spot[2];
+  node *ptr;
+  parent->child_head = ptr;
+  //checks for children horizontally
+  while(count < BOARD_SIZE){
+    while(counter < BOARD_SIZE){
+      if(counter + 2 <= BOARD_SIZE){
+	if((enemy == parent->state[count][counter]) 
+	   && (friendly == parent->state[count][counter+1])
+	   && (parent->state[count][counter+2] == '0')){
+	      spot[0]=count;
+	      spot[1]=counter;
+	      ptr = malloc( sizeof(node) );
+	      if(ptr == NULL){
+		printf("malloc failed: determine_child\n");
+		exit(EXIT_FAILURE);
+	      }
+	      memset(ptr,0,sizeof(node));
+	}
+
+	if((counter - 2) >= 0){
+	  if((enemy == parent->state[count][counter])
+	     && (friendly == parent->state[count][counter-1])
+	     && (parent->state[count][counter-2] == '0')){
+	        spot[0]=count;
+	        spot[1]=counter;
+	  }
+	}
+      }
+
+      printf ( "%c", parent->state[count][counter]);
+      counter = counter+1;
+    }
+
+  count++;
+  }
+
+}
+
+
+
+
+
 
 //will evaluate the board and return a number based on the
 //number of moves an enemy has
@@ -345,38 +392,48 @@ int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
  return tc;
 }
 
-/*** MIN-MAX ALGORITHM IMPLEMENTATION ***/
-void _MIN_MAX(char state[][BOARD_SIZE])
+
+int Terminal_Test(char current, char opponent, char state[][BOARD_SIZE])
 {
-  //***function combines MAX-DECISION and MAX-VALUE psuedo-code
-  //input: current state of the game
-  
-  //Terminal test consists of evaluating the current state, if the current
-  //state yields no possible moves for the enemy (returns zero) then the current
-  //player has won the game, if not continue
+  //function determines the number of moves left, if 0, calculate the 
+  //the number of moves left and test whether its a terminal state
 
-  //**** TEST TO GET NUMBER OF MOVES LEFT FOR WHITE, MAXIMIZE BLACK
-  char MAX = 'B';
-  char MIN = 'W';
-
-  int eval = evaluation(MAX,MIN,state);
-  
-  if(MAX == 'B'){
-    //multiple by -1 if loooking for MAX value as will reurn max value less than
+  int eval = evaluation(current,opponent,state);
+  if(current == 'B'){
+    //multiple by -1 if looking for MAX value as will reurn max value less than
     //zero, so multiple by -1 to get positive integer
     eval *= -1;
   }
   //else if looking for MIN value, eval will be the closet value to 0
-  printf("Number of moves left for enemy: %d\n",eval);
-  //if value is 0, means black has won the game, else print the moves left
+  
+  //if terminal state found, return 0 (indicating current won, else return 1)
   if(eval == 0){
+    return 0;
+  }
+
+  return 1;
+}
+
+/*** MIN-MAX ALGORITHM IMPLEMENTATION ***/
+void _MAX(char state[][BOARD_SIZE])
+{
+  //***function combines MAX-DECISION and MAX-VALUE psuedo-code
+  //input: current state of the game
+  
+  char v[2]; //string signifying which move to take, returned
+
+  char MAX = 'B';
+  char MIN = 'W';
+ 
+  //**** TERMINAL TEST ****//
+  int eval;
+  if((eval = Terminal_Test(MAX,MIN,state)) == 0){
     printf("you've won Black!!!\n");
+    return;
   }
-  else{
-    printf("The number of moves left for %c: %d\n",MIN,eval);
-  }
-
-
+  /******************************************************************/
+  
+  //***ITERATE THROUGH SUCCESSORS OF CURRENT STATE, RECURSE AND DOES DEPTH FIRST SEARCH (3 levels)
 
 
 

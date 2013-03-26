@@ -3,6 +3,7 @@
 #define _KOHANE_H_
 
 #define BOARD_SIZE 8
+#define TREE_DEPTH 3
 
 /* min-max node structure */
 typedef struct mm_node{
@@ -16,12 +17,8 @@ typedef struct mm_node{
   char state[BOARD_SIZE][BOARD_SIZE];
 } node;
 
-/*** global head pointer used to build min-max tree,
-     and tot point to the current state node ***/
-extern node *tree_head;
-extern node *current_state;
-
 extern node *test_tree_head;
+extern node *current_state;
 
 /* 2D char array used to represent current board state */
 extern char board[BOARD_SIZE][BOARD_SIZE];
@@ -33,8 +30,12 @@ int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]);
 
 void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]);
 
+void copyparenttochild(node *parent, node *child);
+void determine_child(node *parent, char enemy, char friendly);
 
-void _MIN_MAX(char state[][BOARD_SIZE]);
+int Terminal_Test(char current, char opponent, char  state[][BOARD_SIZE]);
+
+void _MAX(char state[][BOARD_SIZE]);
 
 
 /* function builds a test tree using the global tree head node 
