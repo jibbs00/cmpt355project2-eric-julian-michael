@@ -36,6 +36,13 @@ void add_front( struct List ** list, void * data )
     node->data = data;
     node->next = (*list)->head;
 
-    (*list)->head = node;
+    if( (*list)->count == 0 )
+    {
+        (*list)->tail = node;
+    }
+    else
+    {
+        (*list)->head = node;
+    }
     (*list)->count++;
 }
