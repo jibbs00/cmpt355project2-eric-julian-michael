@@ -1,9 +1,10 @@
 #ifndef _KONANE_H_
 #define _KONANE_H_
 
-#include "state.h"
-
 #define SIZE 8
+
+#include "state.h"
+#include "move.h"
 
 void * actions( const struct State * state );
 char ** result( const struct State * state, const struct Move * action );

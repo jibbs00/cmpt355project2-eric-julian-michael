@@ -373,10 +373,9 @@ int validateAction( const struct State * state, const struct Move * move )
 int terminalTest( const struct State * state )
 {
     /* if there are no more moves for other player, game is done */
-    char ** board = state->board;
     struct List * acts = new_list();
     struct List * movesRight, * movesLeft, * movesDown, * movesUp;
-    char player = opposingPlayer( state );
+    char player = state->player;
 
     for( int i = 0; i < SIZE; ++i )
     {
