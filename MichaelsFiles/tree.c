@@ -393,7 +393,7 @@ int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
      if(count+2<=size){
        if((ecolor==board[count][counter])
 	  && (fcolor==board[count+1][counter])
-	  && (board[counter][count+2]=='O'))
+	  && (board[count+2][counter]=='O'))
 	 {
 	   tc=tc+1;
 	 }
