@@ -22,3 +22,20 @@ void add_children_game_node( struct GameNode * parent, struct GameNode * child )
     child->parent = parent;
     add_front( &parent->children, child );
 }
+
+void delete_children_game_node( struct GameNode * parent )
+{
+    struct List * children = parent->children;
+    struct ListNode * current;
+
+    if( parent == NULL )
+        return;
+
+    
+    for( current = children->head;
+         current != NULL;
+         current = current->next )
+    {
+        delete_children_game_node( current->data );
+    }
+}

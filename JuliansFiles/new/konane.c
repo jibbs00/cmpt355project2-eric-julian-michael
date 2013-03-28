@@ -6,7 +6,186 @@
 #include "list.h"
 #include "game_node.h"
 
-#define SIZE 8
+
+/**
+ * Get a set of possible actions across right
+ *
+ * @param board a konane board
+ * @param row the row to check
+ * @param player the current player
+ * @return a set of actions
+ */
+static void * actionsRight( char board[][SIZE], int row, char player )
+{
+    int col = 0;                        /* current pos */
+    struct List * actions = new_list();
+
+    /* find all possible actions across right in row */
+    while( col < SIZE )
+    {
+        /* andvance to next piece in row */
+        for( ; 
+             ( board[ row ][ ( col ) ] != player ) && 
+             ( col < SIZE - 1);             /* stop at end one before end of board */
+             ++col );
+
+        /* check for moves */
+        for( int i = col + 1; i < SIZE; i++ )
+        {
+            if( board[ row ][ (col + i) ] != player &&
+                board[ row ][ (col + i) ] != 'O' ) 
+            {
+                if( board[ row ][ ( col + i + 1 ) ]== 'O' )
+                {
+                    /* has move */
+                    add_front( &actions, new_move( row, col, row, col + i + 1 ) );
+
+                    /* check for more moves */
+                    i += 1;
+                    continue;    /* not really necessary */
+                }
+            }
+        }
+        col += 1;   /* advance piece */
+    }
+
+    return actions;
+}
+
+/**
+ * Get a set of possible actions across left
+ *
+ * @param board a konane board
+ * @param row the row to check
+ * @param player the current player
+ * @return a set of actions
+ */
+static void * actionsLeft( char ** board, int row, char player )
+{
+    int col = SIZE;                     /* current pos */
+    struct List * actions = new_list();
+
+    /* find all possible actions across right in row */
+    while( col >= 0 )
+    {
+        /* andvance to next piece in row */
+        for( ; 
+             ( board[ row ][ col ] != player ) && 
+             ( col > 1);             /* stop at end one before end of board */
+             col-- );
+
+        /* check for moves */
+        for( int i = col + 1; i < SIZE; i++ )
+        {
+            if( board[ row ][ ( col - i ) ] != player &&
+                board[ row ][ ( col - i ) ] != 'O' )
+            {
+                if( board[ row ][ ( col - (i + 1 )) ]== 'O' )
+                {
+                    /* has move */
+                    add_front( &actions, new_move( row, col, row, col - (i + 1) ) );
+
+                    /* check for more moves */
+                    i += 1;
+                    continue;    /* not really necessary */
+                }
+            }
+        }
+        col -= 1;   /* advance piece */
+    }
+
+    return actions;
+}
+
+/**
+ * Get a set of possible actions down from the top
+ *
+ * @param board a konane board
+ * @param col the column to check
+ * @param player the current player
+ * @return a set of actions
+ */
+static void * actionsDown( char ** board, int col, char player )
+{
+    int row = 0;                        /* current pos */
+    struct List * actions = new_list();
+
+    /* find all possible actions across right in row */
+    while( row < SIZE )
+    {
+        /* andvance to next piece in row */
+        for( ; 
+             ( board[ row ][ col ] != player ) && 
+             ( row < SIZE - 1);             /* stop at end one before end of board */
+             ++row );
+
+        /* check for moves */
+        for( int i = row + 1; i < SIZE; i++ )
+        {
+            if( board[ (row + i) ][ col ] != player &&
+                board[ (row + i) ][ col ] != 'O' )
+            {
+                if( board[ (row + i + 1) ][ col ]== 'O' )
+                {
+                    /* has move */
+                    add_front( &actions, new_move( row, col, row + i + 1, col ) );
+
+                    /* check for more moves */
+                    i += 1;
+                    continue;    /* not really necessary */
+                }
+            }
+        }
+        row += 1;   /* advance piece */
+    }
+
+    return actions;
+}
+
+/**
+ * Get a set of possible actions down from the bottom up
+ *
+ * @param board a konane board
+ * @param col the column to check
+ * @param player the current player
+ * @return a set of actions
+ */
+static void * actionsUp( char ** board, int col, char player )
+{
+    int row = SIZE;                        /* current pos */
+    struct List * actions = new_list();
+
+    /* find all possible actions across right in row */
+    while( row >= 0 )
+    {
+        /* andvance to next piece in row */
+        for( ; 
+             ( board[ row ][ col ] != player ) && 
+             ( row < SIZE - 1);             /* stop at end one before end of board */
+             ++row );
+
+        /* check for moves */
+        for( int i = row + 1; i < SIZE; i++ )
+        {
+            if( board[ ( row - i ) ][ col ] != player &&
+                board[ ( row - i ) ][ col ] != 'O' )
+            {
+                if( board[ (row - (i + 1)) ][ col ]== 'O' )
+                {
+                    /* has move */
+                    add_front( &actions, new_move( row, col, row + (i-1), col ) );
+
+                    /* check for more moves */
+                    i += 1;
+                    continue;    /* not really necessary */
+                }
+            }
+        }
+        row -= 1;   /* advance piece */
+    }
+
+    return actions;
+}
 
 /**
  * Get a set of actions at a state
@@ -14,7 +193,7 @@
  * @param state
  * @return the set of actions in a state
  */
-static void * actions( const struct State * state )
+void * actions( const struct State * state )
 {
     
     char ** board = state->board;
@@ -77,7 +256,7 @@ static void * actions( const struct State * state )
  * @return the resulting state of performing action on the state, return 0 if
  *  action is invalid
  */
-static struct State * result( const struct State * state, const void * action )
+struct State * result( const struct State * state, const void * action )
 {
     const char * oldBoard = state->board ;
 
@@ -129,7 +308,7 @@ static struct State * result( const struct State * state, const void * action )
  * @param move the move to make
  * @return 1 if move is valid, else return 0
  */
-static int validateAction( const char ** board, char player, const struct Move * move )
+int validateAction( const char ** board, char player, const struct Move * move )
 {
     void * moves;
 
@@ -176,7 +355,7 @@ static int validateAction( const char ** board, char player, const struct Move *
  * @return 1 if the game is in a terminal state, i.e. a player is
  *  unable to capture an enemy piece, else return 0
  */
-static int terminalTest( const struct State * state )
+int terminalTest( const struct State * state )
 {
     /* if there are no more moves for other player, game is done */
     char ** board = state->board;
@@ -240,186 +419,6 @@ static int terminalTest( const struct State * state )
  * @param state
  * @param player
  */
-static int utility( const void * state, const void * player )
+int utility( const void * state, const void * player )
 {
-}
-
-/**
- * Get a set of possible actions across right
- *
- * @param board a konane board
- * @param row the row to check
- * @param player the current player
- * @return a set of actions
- */
-static void * actionsRight( const char ** board, int row, char player )
-{
-    int col = 0;                        /* current pos */
-    struct List * actions = new_list();
-
-    /* find all possible actions across right in row */
-    while( col < SIZE )
-    {
-        /* andvance to next piece in row */
-        for( ; 
-             ( board[ row ][ ( col ) ] != player ) && 
-             ( col < SIZE - 1);             /* stop at end one before end of board */
-             ++col );
-
-        /* check for moves */
-        for( int i = col + 1; i < SIZE; i++ )
-        {
-            if( board[ row ][ (col + i) ] != player &&
-                board[ row ][ (col + i) ] != 'O' ) 
-            {
-                if( board[ row ][ ( col + i + 1 ) ]== 'O' )
-                {
-                    /* has move */
-                    add_front( &actions, new_move( row, col, row, col + i + 1 ) );
-
-                    /* check for more moves */
-                    i += 1;
-                    continue;    /* not really necessary */
-                }
-            }
-        }
-        col += 1;   /* advance piece */
-    }
-
-    return actions;
-}
-
-/**
- * Get a set of possible actions across left
- *
- * @param board a konane board
- * @param row the row to check
- * @param player the current player
- * @return a set of actions
- */
-static void * actionsLeft( const char ** board, int row, char player )
-{
-    int col = SIZE;                     /* current pos */
-    struct List * actions = new_list();
-
-    /* find all possible actions across right in row */
-    while( col >= 0 )
-    {
-        /* andvance to next piece in row */
-        for( ; 
-             ( board[ row ][ col ] != player ) && 
-             ( col > 1);             /* stop at end one before end of board */
-             col-- );
-
-        /* check for moves */
-        for( int i = col + 1; i < SIZE; i++ )
-        {
-            if( board[ row ][ ( col - i ) ] != player &&
-                board[ row ][ ( col - i ) ] != 'O' )
-            {
-                if( board[ row ][ ( col - (i + 1 )) ]== 'O' )
-                {
-                    /* has move */
-                    add_front( &actions, new_move( row, col, row, col - (i + 1) ) );
-
-                    /* check for more moves */
-                    i += 1;
-                    continue;    /* not really necessary */
-                }
-            }
-        }
-        col -= 1;   /* advance piece */
-    }
-
-    return actions;
-}
-
-/**
- * Get a set of possible actions down from the top
- *
- * @param board a konane board
- * @param col the column to check
- * @param player the current player
- * @return a set of actions
- */
-static void * actionsDown( const char ** board, int col, char player )
-{
-    int row = 0;                        /* current pos */
-    struct List * actions = new_list();
-
-    /* find all possible actions across right in row */
-    while( row < SIZE )
-    {
-        /* andvance to next piece in row */
-        for( ; 
-             ( board[ row ][ col ] != player ) && 
-             ( row < SIZE - 1);             /* stop at end one before end of board */
-             ++row );
-
-        /* check for moves */
-        for( int i = row + 1; i < SIZE; i++ )
-        {
-            if( board[ (row + i) ][ col ] != player &&
-                board[ (row + i) ][ col ] != 'O' )
-            {
-                if( board[ (row + i + 1) ][ col ]== 'O' )
-                {
-                    /* has move */
-                    add_front( &actions, new_move( row, col, row + i + 1, col ) );
-
-                    /* check for more moves */
-                    i += 1;
-                    continue;    /* not really necessary */
-                }
-            }
-        }
-        row += 1;   /* advance piece */
-    }
-
-    return actions;
-}
-
-/**
- * Get a set of possible actions down from the bottom up
- *
- * @param board a konane board
- * @param col the column to check
- * @param player the current player
- * @return a set of actions
- */
-static void * actionsUp( const char ** board, int col, char player )
-{
-    int row = SIZE;                        /* current pos */
-    struct List * actions = new_list();
-
-    /* find all possible actions across right in row */
-    while( row >= 0 )
-    {
-        /* andvance to next piece in row */
-        for( ; 
-             ( board[ row ][ col ] != player ) && 
-             ( row < SIZE - 1);             /* stop at end one before end of board */
-             ++row );
-
-        /* check for moves */
-        for( int i = row + 1; i < SIZE; i++ )
-        {
-            if( board[ ( row - i ) ][ col ] != player &&
-                board[ ( row - i ) ][ col ] != 'O' )
-            {
-                if( board[ (row - (i + 1)) ][ col ]== 'O' )
-                {
-                    /* has move */
-                    add_front( &actions, new_move( row, col, row + (i-1), col ) );
-
-                    /* check for more moves */
-                    i += 1;
-                    continue;    /* not really necessary */
-                }
-            }
-        }
-        row -= 1;   /* advance piece */
-    }
-
-    return actions;
 }

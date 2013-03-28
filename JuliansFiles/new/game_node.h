@@ -11,5 +11,6 @@ struct GameNode {
 
 struct GameNode * new_game_node( struct State * state, struct GameNode * parent );
 void add_children_game_node( struct GameNode * parent, struct GameNode * child );
+void delete_children_game_node( struct GameNode * parent );
 
 #endif /* _GAME_NODE_ */
