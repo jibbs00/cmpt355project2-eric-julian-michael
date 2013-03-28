@@ -25,14 +25,9 @@ extern char board[BOARD_SIZE][BOARD_SIZE];
 /* function to initialize the board by reading in values from a file */
 void _setupboard(char *filename);
 
-int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]);
-
 void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]);
 
 void copyparenttochild(node *parent, node *child);
-//void determine_child(node *parent, char enemy, char friendly);
-
-
 
 int Terminal_Test(char current, char opponent, char state[][BOARD_SIZE]);
 
