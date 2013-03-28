@@ -29,8 +29,6 @@ void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]);
 
 void copyparenttochild(node *parent, node *child);
 
-int Terminal_Test(char current, char opponent, char state[][BOARD_SIZE]);
-
 /* function builds a test tree using the global tree head node 
    (NOTE: tree has 3 lvls (max, min, terminal) */
 void _testTree();
