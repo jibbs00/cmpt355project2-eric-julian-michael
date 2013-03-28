@@ -6,7 +6,7 @@
 
 struct State {
     char player;
-    char board[][SIZE];
+    char board[SIZE][SIZE];
 };
 
 struct State * new_state( char board[][SIZE], char player );

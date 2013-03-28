@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <assert.h>
 
 #include "konane.h"
 #include "state.h"
@@ -196,17 +197,16 @@ static void * actionsUp( char ** board, int col, char player )
 void * actions( const struct State * state )
 {
     
-    char ** board = state->board;
     struct List * acts = new_list();
     struct List * movesRight, * movesLeft, * movesDown, * movesUp;
     char player = state->player ;
 
     for( int i = 0; i < SIZE; ++i )
     {
-        movesRight = actionsRight( board, i, player );
-        movesLeft = actionsLeft( board, i, player );
-        movesDown = actionsDown( board, i, player );
-        movesUp = actionsUp( board, i, player );
+        movesRight = actionsRight( state->board, i, player );
+        movesLeft = actionsLeft( state->board, i, player );
+        movesDown = actionsDown( state->board, i, player );
+        movesUp = actionsUp( state->board, i, player );
     }
 
     /* combine sets */
@@ -256,49 +256,54 @@ void * actions( const struct State * state )
  * @return the resulting state of performing action on the state, return 0 if
  *  action is invalid
  */
-struct State * result( const struct State * state, const void * action )
+char ** result( const struct State * state, const struct Move * action )
 {
-    const char * oldBoard = state->board ;
+    char ** newBoard  = calloc( SIZE, sizeof( char * ) );
+    assert( newBoard != NULL );
 
-    char * newBoard  = calloc( SIZE * SIZE, sizeof( char ) );
-    assert( newBoard != 0 );
+    for( int i = 0; i < SIZE; i++ )
+    {
+        newBoard[i] = calloc( SIZE, sizeof( char ) );
+        assert( newBoard[i] );
+    }
     
     /* copy old board */
-    for( int i = 0; i < SIZE * SIZE ; i++ )
-        newBoard[ i ] = oldBoard[ i ];
+    for( int i = 0; i < SIZE; i++ )
+        for( int j = 0; j < SIZE; j++ )
+            newBoard[ i ][ j ] = state->board[ i ][ j ];
 
     /* validate move */ 
-    if( validateAction( currentBoard( state ), *(char *)currentPlayer( state ), action ) )
+    if( validateAction( state->board, state->player, action ) )
     {
         /* get resulting board state 
          * by removing all pieces between start and end action 
          */
-        if( startRow( state ) == endRow( state ) )
+        if( action->start_row == action->end_row )
         {
             /* blank column */
-            if( startCol( state ) < endCol( state ) )
-                for( int i = startCol( state ); i < endCol( state ); i++ )
-                    newBoard[ startRow( state ) * SIZE + i ] = 'O';
+            if( action->start_col < action->end_col )
+                for( int i = action->start_col; i < action->end_col; i++ )
+                    newBoard[ action->start_row ][ i ] = 'O';
             else
-                for( int i = endCol( state ); i < startCol( state ); i++ )
-                    newBoard[ startRow( state ) * SIZE + i ] = '0';
+                for( int i = action->end_col; i < action->start_col; i++ )
+                    newBoard[ action->start_row ][ i ] = '0';
         }
         else
         {
             /* blank row */
-            if( startRow( state ) < endRow( state ) )
-                for( int i = startRow( state ); i < endRow( state ); i++ )
-                    newBoard[ ( startRow( state ) + i ) * SIZE + startCol( state ) ] = 'O';
+            if( action->start_row < action->end_row )
+                for( int i = action->start_row; i < action->end_row; i++ )
+                    newBoard[ action->start_row + i ][ action->start_col ] = 'O';
             else
-                for( int i = endRow( state ); i < startRow( state ); i++ )
-                    newBoard[ ( endRow( state ) + i ) * SIZE + startCol( state ) ] = '0';
+                for( int i = action->end_row; i < action->start_row; i++ )
+                    newBoard[ action->end_row + i ][ action->start_col ] = '0';
         }
 
         /* return changed board */
         return newBoard;
     }
 
-    return 0;
+    return NULL;
 }
 
 /**
@@ -322,10 +327,14 @@ int validateAction( const char ** board, char player, const struct Move * move )
         else
             moves = actionsRight( board, move->start_row, player );
 
-        if( contains( moves, self ) )
+        struct ListNode * current = moves->head;
+        while( current != NULL )
         {
-            delete( moves );
-            return 1;
+            if( compare_move( current->data, move ) == 1 )
+            {
+                delete_list( &moves );
+                return 1;
+            }
         }
     
     }
