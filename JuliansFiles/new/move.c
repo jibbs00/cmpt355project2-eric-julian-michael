@@ -52,6 +52,7 @@ struct Move * translate_in_move( const char * move )
 {
     int length = strnlen( move, 20 );
     int i;
+    int valid = 0;
     char start_row[2];
     char start_col[2];
     char end_row[2];
@@ -63,6 +64,7 @@ struct Move * translate_in_move( const char * move )
         {
             start_row[0] = move[ i ];
             start_row[1] = '\0';
+            valid++;
             break;
         }
 
@@ -72,6 +74,7 @@ struct Move * translate_in_move( const char * move )
         {
             start_col[0] = move[ i ];
             start_col[1] = '\0';
+            valid++;
             break;
         }
 
@@ -81,6 +84,7 @@ struct Move * translate_in_move( const char * move )
         {
             end_row[0] = move[ i ];
             end_row[1] = '\0';
+            valid++;
             break;
         }
 
@@ -90,8 +94,12 @@ struct Move * translate_in_move( const char * move )
         {
             end_col[0] = move[ i ];
             end_col[1] = '\0';
+            valid++;
             break;
         }
+
+    if( valid != 4 )
+        return NULL;
 
     struct Move * translated_move = new_move( letter2row( start_row ), 
             atoi( start_col ),
