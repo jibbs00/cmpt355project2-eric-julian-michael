@@ -110,32 +110,6 @@ void delete_node( TNode * root)
 }
 
 
-
-/*void _cleanTesttree(TNode *head)
-{
-  TNode *del = head;
-
-  //iterate through tree, from level to level, deleting nodes
-  while(del != NULL){
-      TNode *temp = del;
-      if(del->next != NULL){
-	del = del->next;
-      }
-      else{
-	if(del->parent != NULL){
-	  del = del->parent->child_head->child_head;
-	}
-	else{
-	  del = del->child_head;
-	}
-      }
-
-      delete_node(temp);
-  }
-
-}*/
-
-
 void print_node(TNode * n)
 {
   printf(" UTILITY VAL: %d\n",n->utility_val);
@@ -377,6 +351,94 @@ void determine_children(TNode *parent, char friendly, char enemy)
   free(new_node);
 }
 
+
+//will evaluate the board and return a number based on the
+//number of moves an enemy has
+int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
+  int count = 0, counter = 0;
+  int size=BOARD_SIZE;
+  int tc=0;
+   
+ //goes through the board horizontally
+ while(count<size){
+     while(counter<size){
+       if(counter+2<=size){
+	 if((ecolor==board[count][counter])
+	    && (fcolor==board[count][counter+1])
+	    && (board[count][counter+2]=='O'))
+	   { 
+	     tc=tc+1; 
+	   }
+       }
+       if(counter-2>=0){
+	 if((ecolor==board[count][counter])
+	    && (fcolor==board[count][counter-1])
+	    && (board[count][counter-2]=='O')) 
+	   {
+	     tc=tc+1;
+	   }
+       }
+       //printf("count: %d counter: %d\n",count,counter);
+       counter++;
+     }
+     counter=0;
+    count++;
+ }
+
+ count=0;
+ counter=0;
+ //goes through the board vertically
+ while(counter<size){
+   while(count<size){
+     if(count+2<=size){
+       if((ecolor==board[count][counter])
+	  && (fcolor==board[count+1][counter])
+	  && (board[counter][count+2]=='O'))
+	 {
+	   tc=tc+1;
+	 }
+     }
+     if(count-2>=0){
+       if((ecolor==board[count][counter])
+	  && (fcolor==board[count-1][counter])
+	  && (board[count-2][counter]=='O'))
+	 {
+	   tc=tc+1;
+	 }
+     }
+
+     //printf("count: %d counter: %d\n",count,counter);
+     count++;
+   }
+   count=0;
+   counter++;
+ }
+ 
+ return tc;
+}
+
+
+int Terminal_Test(char current, char opponent, char state[][BOARD_SIZE])
+{
+  //function determines the number of moves left, if 0, calculate the 
+  //the number of moves left and test whether its a terminal state
+
+  int eval = evaluation(current,opponent,state);
+  if(current == 'B'){
+    //multiple by -1 if looking for MAX value as will reurn max value less than
+    //zero, so multiple by -1 to get positive integer
+    eval *= -1;
+  }
+  //else if looking for MIN value, eval will be the closet value to 0
+  
+  //if terminal state found, return 0 (indicating current won, else return 1)
+  if(eval == 0){
+    return 0;
+  }
+
+  return 1;
+}
+
 /*** MIN-MAX ALGORITHM IMPLEMENTATION ***/
 void MAX_VALUE(TNode *node)
 {
@@ -392,16 +454,32 @@ void MAX_VALUE(TNode *node)
     //return;
   }
   /******************************************************************/
-  
+
   //create the children for the current state passed
   determine_children(node,MAX,MIN);
+    
+  //variable for utility value that will be assigned to the parent from the best child
+  int parent_utility = node->utility_val;
   
   //***ITERATE THROUGH SUCCESSORS OF CURRENT STATE, RECURSE AND DOES DEPTH FIRST SEARCH (3 levels)
   TNode *child = node->child_head;
   while(child != NULL){
+    //get utility value for current child node (HEURISTIC: your moves left - opponents moves left)
+    child->utility_val = evaluation(MAX,MIN,child->state) - evaluation(MIN,MAX,child->state);
+    
     MAX_VALUE(child);
+
+    //reset utility of parent based on higher child values
+    if(child->utility_val > parent_utility){
+      parent_utility = child->utility_val;
+    }
+
     child = child->next;
   }
+
+  //set utility value of parent before return
+  node->utility_val = parent_utility;
+
   return;
   
 }
@@ -414,18 +492,22 @@ void Build_Tree(int level, char cur_state[][BOARD_SIZE])
   /*create head node */
   create_node(tree_head,cur_state);
   //make first move (user made)
-  tree_head->state[3][3] = 'O';
+  //tree_head->state[3][3] = 'O';
   
   //testing for a given state
-  /*tree_head->state[1][3] = 'O';
+  tree_head->state[1][3] = 'O';
   tree_head->state[3][3] = 'O';
   tree_head->state[2][3] = 'O';
   tree_head->state[5][3] = 'O';
   tree_head->state[5][5] = 'O';
-  tree_head->state[5][7] = 'O';*/
+  tree_head->state[5][7] = 'O';
   //determine_children(tree_head,'B','W');
 
-  MAX_VALUE(tree_head);
+  tree_head->utility_val = evaluation('W','B',tree_head->state);
+  print_node(tree_head);
+
+
+  //MAX_VALUE(tree_head);
 
   traverse_tree(tree_head,print_node,NULL,NULL);
   delete_node(tree_head);

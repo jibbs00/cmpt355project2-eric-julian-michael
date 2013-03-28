@@ -24,6 +24,8 @@ void delete_node( TNode * root);
 void print_node(TNode * n);
 void traverse_tree( TNode * root, void (*pre)( TNode * n ), void (*inorder)( TNode * n ), void (*post)( TNode * n ) );
 
+int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]);
+int Terminal_Test(char current, char opponent, char state[][BOARD_SIZE]);
 
 void determine_children(TNode *parent, char friendly, char enemy);
 
