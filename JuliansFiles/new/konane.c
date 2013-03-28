@@ -16,7 +16,7 @@
  * @param player the current player
  * @return a set of actions
  */
-static void * actionsRight( char board[][SIZE], int row, char player )
+static void * actionsRight( const struct State * state, int row, char player )
 {
     int col = 0;                        /* current pos */
     struct List * actions = new_list();
@@ -26,17 +26,17 @@ static void * actionsRight( char board[][SIZE], int row, char player )
     {
         /* andvance to next piece in row */
         for( ; 
-             ( board[ row ][ ( col ) ] != player ) && 
+             ( state->board[ row ][ ( col ) ] != player ) && 
              ( col < SIZE - 1);             /* stop at end one before end of board */
              ++col );
 
         /* check for moves */
         for( int i = col + 1; i < SIZE; i++ )
         {
-            if( board[ row ][ (col + i) ] != player &&
-                board[ row ][ (col + i) ] != 'O' ) 
+            if( state->board[ row ][ (col + i) ] != player &&
+                state->board[ row ][ (col + i) ] != 'O' ) 
             {
-                if( board[ row ][ ( col + i + 1 ) ]== 'O' )
+                if( state->board[ row ][ ( col + i + 1 ) ]== 'O' )
                 {
                     /* has move */
                     add_front( &actions, new_move( row, col, row, col + i + 1 ) );
@@ -61,7 +61,7 @@ static void * actionsRight( char board[][SIZE], int row, char player )
  * @param player the current player
  * @return a set of actions
  */
-static void * actionsLeft( char ** board, int row, char player )
+static void * actionsLeft( const struct State * state, int row, char player )
 {
     int col = SIZE;                     /* current pos */
     struct List * actions = new_list();
@@ -71,17 +71,17 @@ static void * actionsLeft( char ** board, int row, char player )
     {
         /* andvance to next piece in row */
         for( ; 
-             ( board[ row ][ col ] != player ) && 
+             ( state->board[ row ][ col ] != player ) && 
              ( col > 1);             /* stop at end one before end of board */
              col-- );
 
         /* check for moves */
         for( int i = col + 1; i < SIZE; i++ )
         {
-            if( board[ row ][ ( col - i ) ] != player &&
-                board[ row ][ ( col - i ) ] != 'O' )
+            if( state->board[ row ][ ( col - i ) ] != player &&
+                state->board[ row ][ ( col - i ) ] != 'O' )
             {
-                if( board[ row ][ ( col - (i + 1 )) ]== 'O' )
+                if( state->board[ row ][ ( col - (i + 1 )) ]== 'O' )
                 {
                     /* has move */
                     add_front( &actions, new_move( row, col, row, col - (i + 1) ) );
@@ -106,7 +106,7 @@ static void * actionsLeft( char ** board, int row, char player )
  * @param player the current player
  * @return a set of actions
  */
-static void * actionsDown( char ** board, int col, char player )
+static void * actionsDown( const struct State * state, int col, char player )
 {
     int row = 0;                        /* current pos */
     struct List * actions = new_list();
@@ -116,17 +116,17 @@ static void * actionsDown( char ** board, int col, char player )
     {
         /* andvance to next piece in row */
         for( ; 
-             ( board[ row ][ col ] != player ) && 
+             ( state->board[ row ][ col ] != player ) && 
              ( row < SIZE - 1);             /* stop at end one before end of board */
              ++row );
 
         /* check for moves */
         for( int i = row + 1; i < SIZE; i++ )
         {
-            if( board[ (row + i) ][ col ] != player &&
-                board[ (row + i) ][ col ] != 'O' )
+            if( state->board[ (row + i) ][ col ] != player &&
+                state->board[ (row + i) ][ col ] != 'O' )
             {
-                if( board[ (row + i + 1) ][ col ]== 'O' )
+                if( state->board[ (row + i + 1) ][ col ]== 'O' )
                 {
                     /* has move */
                     add_front( &actions, new_move( row, col, row + i + 1, col ) );
@@ -151,7 +151,7 @@ static void * actionsDown( char ** board, int col, char player )
  * @param player the current player
  * @return a set of actions
  */
-static void * actionsUp( char ** board, int col, char player )
+static void * actionsUp( const struct State * state, int col, char player )
 {
     int row = SIZE;                        /* current pos */
     struct List * actions = new_list();
@@ -161,17 +161,17 @@ static void * actionsUp( char ** board, int col, char player )
     {
         /* andvance to next piece in row */
         for( ; 
-             ( board[ row ][ col ] != player ) && 
+             ( state->board[ row ][ col ] != player ) && 
              ( row < SIZE - 1);             /* stop at end one before end of board */
              ++row );
 
         /* check for moves */
         for( int i = row + 1; i < SIZE; i++ )
         {
-            if( board[ ( row - i ) ][ col ] != player &&
-                board[ ( row - i ) ][ col ] != 'O' )
+            if( state->board[ ( row - i ) ][ col ] != player &&
+                state->board[ ( row - i ) ][ col ] != 'O' )
             {
-                if( board[ (row - (i + 1)) ][ col ]== 'O' )
+                if( state->board[ (row - (i + 1)) ][ col ]== 'O' )
                 {
                     /* has move */
                     add_front( &actions, new_move( row, col, row + (i-1), col ) );
@@ -203,10 +203,10 @@ void * actions( const struct State * state )
 
     for( int i = 0; i < SIZE; ++i )
     {
-        movesRight = actionsRight( state->board, i, player );
-        movesLeft = actionsLeft( state->board, i, player );
-        movesDown = actionsDown( state->board, i, player );
-        movesUp = actionsUp( state->board, i, player );
+        movesRight = actionsRight( state, i, player );
+        movesLeft = actionsLeft( state, i, player );
+        movesDown = actionsDown( state, i, player );
+        movesUp = actionsUp( state, i, player );
     }
 
     /* combine sets */
@@ -273,7 +273,7 @@ char ** result( const struct State * state, const struct Move * action )
             newBoard[ i ][ j ] = state->board[ i ][ j ];
 
     /* validate move */ 
-    if( validateAction( state->board, state->player, action ) )
+    if( validateAction( state, action ) )
     {
         /* get resulting board state 
          * by removing all pieces between start and end action 
@@ -313,9 +313,9 @@ char ** result( const struct State * state, const struct Move * action )
  * @param move the move to make
  * @return 1 if move is valid, else return 0
  */
-int validateAction( const char ** board, char player, const struct Move * move )
+int validateAction( const struct State * state, const struct Move * move )
 {
-    void * moves;
+    struct List * moves;
 
     /* screen move */
     if( move->start_row == move->end_row && move->start_col != move->end_col )
@@ -323,9 +323,9 @@ int validateAction( const char ** board, char player, const struct Move * move )
         /* potentially valid move */
         /* check if there is a move in the row */
         if( move->start_col < move->end_col )
-            moves = actionsLeft( board, move->start_row, player );
+            moves = actionsLeft( state, move->start_row, state->player );
         else
-            moves = actionsRight( board, move->start_row, player );
+            moves = actionsRight( state, move->start_row, state->player );
 
         struct ListNode * current = moves->head;
         while( current != NULL )
@@ -335,6 +335,7 @@ int validateAction( const char ** board, char player, const struct Move * move )
                 delete_list( &moves );
                 return 1;
             }
+            current = current->next;
         }
     
     }
@@ -343,14 +344,19 @@ int validateAction( const char ** board, char player, const struct Move * move )
         /* potentially valid move */
         /* check if there is move in the column */
         if( move->start_row < move->end_row )
-            moves = actionsDown( board, move->start_col, player );
+            moves = actionsDown( state, move->start_col, state->player );
         else
-            moves = actionsUp( board, move->start_col, player );
+            moves = actionsUp( state, move->start_col, state->player );
 
-        if( contains( moves, self ) )
+        struct ListNode * current = moves->head;
+        while( current != NULL )
         {
-            delete( moves );
-            return 1;
+            if( compare_move( current->data, move ) )
+            {
+                delete_list( &moves );
+                return 1;
+            }
+            current = current->next;
         }
     }
 
@@ -374,10 +380,10 @@ int terminalTest( const struct State * state )
 
     for( int i = 0; i < SIZE; ++i )
     {
-        movesRight = actionsRight( board, i, player );
-        movesLeft = actionsLeft( board, i, player );
-        movesDown = actionsDown( board, i, player );
-        movesUp = actionsUp( board, i, player );
+        movesRight = actionsRight( state, i, player );
+        movesLeft = actionsLeft( state, i, player );
+        movesDown = actionsDown( state, i, player );
+        movesUp = actionsUp( state, i, player );
     }
 
     /* combine sets */

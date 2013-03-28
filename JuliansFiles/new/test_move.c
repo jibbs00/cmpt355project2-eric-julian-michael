@@ -32,6 +32,10 @@ int main( void )
                 human_move->end_row,
                 human_move->end_col );
 
+    /* compare moves */
+    printf( "same = %d\n", compare_move( move, move ) );
+    printf( "different = %d\n", compare_move( move, human_move ) );
+
     free( human_readable );
     free( move );
 

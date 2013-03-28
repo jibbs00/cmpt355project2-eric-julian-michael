@@ -108,3 +108,11 @@ struct Move * translate_in_move( const char * move )
 
     return translated_move;
 }
+
+int compare_move( const struct Move * a, const struct Move * b )
+{
+    return ( a->start_row == b->start_row &&
+             a->start_col == b->start_col &&
+             a->end_row == b->end_row &&
+             a->end_col == b->end_col );
+}

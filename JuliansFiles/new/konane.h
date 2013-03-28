@@ -7,7 +7,7 @@
 
 void * actions( const struct State * state );
 char ** result( const struct State * state, const struct Move * action );
-int validateAction( const char ** board, char player, const struct Move * move );
+int validateAction( const struct State * state, const struct Move * move );
 int terminalTest( const struct State * state );
 int utility( const void * state, const void * player );
 
