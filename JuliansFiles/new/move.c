@@ -116,3 +116,13 @@ int compare_move( const struct Move * a, const struct Move * b )
              a->end_row == b->end_row &&
              a->end_col == b->end_col );
 }
+
+
+void print_move( const struct Move * move )
+{
+    printf( "(%d,%d),(%d,%d)\n", 
+                move->start_row,
+                move->start_col,
+                move->end_row,
+                move->end_col );
+}
