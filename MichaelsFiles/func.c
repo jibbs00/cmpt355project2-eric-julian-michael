@@ -4,10 +4,11 @@
 #include"func.h"
 #include"tree.h"
 
+extern TNode *tree_head;
 node *current_state;
 node *test_tree_head = NULL;
 
-char board[BOARD_SIZE][BOARD_SIZE];
+extern char board[BOARD_SIZE][BOARD_SIZE];
 
 void _setupboard(char *filename)
 {
@@ -35,12 +36,12 @@ void _setupboard(char *filename)
 
 void _testTree()
 {
-  /* create 3 lvls for the initial tree */
-  /*first lvl, max's turn, initial state of board */
+  // create 3 lvls for the initial tree
+  //first lvl, max's turn, initial state of board
   _createNode(0,board); //create initial node for test_tree_head, current state = head at this point
-
-  /*second lvl, min's turn, 4 states */
-  /*(top left corner, (4,4), (5,5), bottom right corner) */
+  
+  //second lvl, min's turn, 4 states
+  //(top left corner, (4,4), (5,5), bottom right corner)
   char new_state[BOARD_SIZE][BOARD_SIZE];
   
   /*NOTE: x - 1, and y - 1 as array range from 0 -7, not 1 - 8 */
@@ -108,7 +109,7 @@ void _testTree()
   _playerMove(7,7,6,7,new_state); //zero all slots between moves
   _createNode(0,new_state);
 
-  /* print tree and clean up memory */
+  // print tree and clean up memory
   _printTesttree(test_tree_head);
   _cleanTesttree(test_tree_head);
 
@@ -125,7 +126,7 @@ void _createNode(int next, char state[][BOARD_SIZE])
    memset(new_node,0,sizeof(node));
   /* copy state over to head node */
   _copyBoard(new_node,state);
-
+  
   if(test_tree_head == NULL){
     new_node->parent = NULL;
     new_node->next = NULL;
@@ -184,6 +185,17 @@ void _copyBoard(node *n, char state[][BOARD_SIZE])
 }
 
 
+void _printState(node *n)
+{
+  for(int x = 0; x < BOARD_SIZE; x++){
+    for(int y = 0; y < BOARD_SIZE; y++){
+      printf("%c",n->state[x][y]);
+    }
+    printf("\n");
+  }
+  printf("\n");
+}
+
 void _printTesttree(node *head)
 {
   node *itr = head;
@@ -196,16 +208,13 @@ void _printTesttree(node *head)
       printf(" UTILITY VAL: %d\n",head->utility_val);
       printf(" STATE:\n");
 
-      //TEST MAX FOR PRINTING
-      _MAX(itr->state);
-
       for(int x = 0; x < BOARD_SIZE; x++){
 	for(int y = 0; y < BOARD_SIZE; y++){
 	  printf("%c",itr->state[x][y]);
 	}
 	printf("\n");
       }
-
+      
       /* iterate through siblings in same level if not next */
       if(itr->next != NULL){
 	itr = itr->next;
@@ -277,59 +286,6 @@ void _playerMove(int x1, int y1, int x2, int y2, char state[][BOARD_SIZE]){
   }
 
 }
-
-void determine_child(node *parent, char enemy, char friendly){
-  int count = 0, counter = 0;
-  int spot[2];
-  node *ptr;
-
-  //checks for children horizontally
-  while(count < BOARD_SIZE){
-    while(counter < BOARD_SIZE){
-      if(counter + 2 < BOARD_SIZE){
-	if((enemy == parent->state[count][counter]) 
-	   && (friendly == parent->state[count][counter+1])
-	   && (parent->state[count][counter+2] == '0')){
-	      spot[0]=count;
-	      spot[1]=counter;
-	      
-	      for(int x = 0; x < BOARD_SIZE; x++){
-		for(int y = 0; y < BOARD_SIZE; y++){
-
-		}
-	      }
-
-	      
-
-	}
-      }
-
-      if((counter - 2) >= 0){
-	if((enemy == parent->state[count][counter])
-	   && (friendly == parent->state[count][counter-1])
-	   && (parent->state[count][counter-2] == '0')){
-	      spot[0]=count;
-	      spot[1]=counter;
-	  
-
-	}
-
-      }
-      
-
-      printf ( "%c", parent->state[count][counter]);
-      counter = counter+1;
-    }
-
-  count++;
-  }
-
-}
-
-
-
-
-
 
 //will evaluate the board and return a number based on the
 //number of moves an enemy has
@@ -416,31 +372,4 @@ int Terminal_Test(char current, char opponent, char state[][BOARD_SIZE])
   }
 
   return 1;
-}
-
-/*** MIN-MAX ALGORITHM IMPLEMENTATION ***/
-void _MAX(char state[][BOARD_SIZE])
-{
-  //***function combines MAX-DECISION and MAX-VALUE psuedo-code
-  //input: current state of the game
-  
-  char v[2]; //string signifying which move to take, returned
-
-  char MAX = 'B';
-  char MIN = 'W';
- 
-  //**** TERMINAL TEST ****//
-  int eval;
-  if((eval = Terminal_Test(MAX,MIN,state)) == 0){
-    printf("you've won Black!!!\n");
-    return;
-  }
-  /******************************************************************/
-  
-  //***ITERATE THROUGH SUCCESSORS OF CURRENT STATE, RECURSE AND DOES DEPTH FIRST SEARCH (3 levels)
-
-
-
-
-
 }

@@ -16,6 +16,8 @@ typedef struct _tnode {
     LinkedList * children;  /**< list of children */
 } TNode;
 
+int compare_nodes(TNode *a, TNode *b);
+void copy_state(TNode *node, char state[][BOARD_SIZE]);
 
 TNode * create_node( char ** state, TNode * parent );
 void delete_node( TNode ** root );

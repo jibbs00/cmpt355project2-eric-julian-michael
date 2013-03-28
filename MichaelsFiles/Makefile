@@ -3,7 +3,7 @@ SHELL=/bin/bash
 CC=gcc
 CFLAGS=-std=c99 -Wall -g
 
-sample: main.c func.o
+sample: main.c func.o tree.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 tree: treemain.c tree.o func.o

@@ -23,9 +23,11 @@ void create_node(TNode * parent, char state[][BOARD_SIZE]);
 void delete_node( TNode * root);
 void print_node(TNode * n);
 void traverse_tree( TNode * root, void (*pre)( TNode * n ), void (*inorder)( TNode * n ), void (*post)( TNode * n ) );
-char ** getState( TNode * node );
-void setState( TNode ** node, char ** state );
 
+
+void determine_children(TNode *parent, char friendly, char enemy);
+
+void MAX_VALUE(TNode *node);
 
 void Build_Tree(int level, char cur_state[][BOARD_SIZE]);
 
