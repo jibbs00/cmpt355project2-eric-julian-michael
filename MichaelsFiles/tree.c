@@ -2,11 +2,38 @@
 #include<stdio.h>
 #include<string.h>
 #include<assert.h>
-#include"func.h"
 #include"tree.h"
 
 /*** global pointers for the tree head ***/
 TNode *tree_head = NULL;
+
+extern char board[BOARD_SIZE][BOARD_SIZE];
+extern char player;
+extern char opponent;
+
+
+void _setupboard(char *filename)
+{
+  FILE *fh = fopen(filename,"r");
+  if(fh == NULL){
+    printf("could not open file %s\n",filename);
+    exit(EXIT_FAILURE);
+  }
+
+  char c;
+  int x = 0, y = 0;
+  while((c = fgetc(fh)) != EOF){
+    if(c == '\n'){
+      x++;
+      y = 0;
+      continue;
+    }
+    board[x][y] = c;
+    y++;
+  }
+  
+  fclose(fh);
+}
 
 
 void copy_state(TNode *node, char state[][BOARD_SIZE])
@@ -463,18 +490,25 @@ void MAX_VALUE(TNode *node)
   
   //***ITERATE THROUGH SUCCESSORS OF CURRENT STATE, RECURSE AND DOES DEPTH FIRST SEARCH (3 levels)
   TNode *child = node->child_head;
-  while(child != NULL){
+  if(child == NULL){
     //get utility value for current child node (HEURISTIC: your moves left - opponents moves left)
-    child->utility_val = evaluation(MAX,MIN,child->state) - evaluation(MIN,MAX,child->state);
+    parent_utility = evaluation(MIN,MAX,node->state) - evaluation(MAX,MIN,node->state);
+  }
+  else{
+    while(child != NULL){
+
+      MAX_VALUE(child);
     
-    MAX_VALUE(child);
+      //get utility value for current child node (HEURISTIC: your moves left - opponents moves left)
+      child->utility_val = evaluation(MIN,MAX,child->state) - evaluation(MAX,MIN,child->state);
+      
+      //reset utility of parent based on higher child values
+      if(child->utility_val > parent_utility){
+	parent_utility = child->utility_val;
+      }
 
-    //reset utility of parent based on higher child values
-    if(child->utility_val > parent_utility){
-      parent_utility = child->utility_val;
+      child = child->next;
     }
-
-    child = child->next;
   }
 
   //set utility value of parent before return
@@ -492,10 +526,10 @@ void Build_Tree(int level, char cur_state[][BOARD_SIZE])
   /*create head node */
   create_node(tree_head,cur_state);
   //make first move (user made)
-  //tree_head->state[3][3] = 'O';
+  tree_head->state[3][3] = 'O';
   
   //testing for a given state
-  tree_head->state[1][3] = 'O';
+  /*tree_head->state[1][3] = 'O';
   tree_head->state[3][3] = 'O';
   tree_head->state[2][3] = 'O';
   tree_head->state[5][3] = 'O';
@@ -503,15 +537,40 @@ void Build_Tree(int level, char cur_state[][BOARD_SIZE])
   tree_head->state[5][7] = 'O';
   //determine_children(tree_head,'B','W');
 
-  tree_head->utility_val = evaluation('W','B',tree_head->state);
+  tree_head->utility_val = evaluation('B','W',tree_head->state);
   print_node(tree_head);
+  */
 
-
-  //MAX_VALUE(tree_head);
+  MAX_VALUE(tree_head);
 
   traverse_tree(tree_head,print_node,NULL,NULL);
   delete_node(tree_head);
   
 }
 
+void MAKE_DECISION(char player, char opponent, char current_state[][BOARD_SIZE])
+{
+  //input: player and agent characters, current game state
+  //ASSUMES tree_head is already allocated and is a node (done in main.c)
 
+  //call function to build tree (MIN_MAX) (propagates all values up tree)
+  MAX_VALUE(tree_head);
+
+  //get utility value propagated up to tree_head
+  int utility = tree_head->utility_val;
+
+  //iterate through immediate children of tree_head, finding matching utility values
+  TNode *child = tree_head->child_head;
+  while(child != NULL){
+    //if childs utility values matches tree_head 
+    if(child->utility_val == utility){
+      
+    }
+  }
+
+  
+  //create a tree node for the state that has been decided by the agent to be carried out
+  create_node(tree_head,current_state);
+
+
+}

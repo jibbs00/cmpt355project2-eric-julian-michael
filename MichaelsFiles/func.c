@@ -8,32 +8,6 @@ extern TNode *tree_head;
 node *current_state;
 node *test_tree_head = NULL;
 
-extern char board[BOARD_SIZE][BOARD_SIZE];
-
-void _setupboard(char *filename)
-{
-  FILE *fh = fopen(filename,"r");
-  if(fh == NULL){
-    printf("could not open file %s\n",filename);
-    exit(EXIT_FAILURE);
-  }
-
-  char c;
-  int x = 0, y = 0;
-  while((c = fgetc(fh)) != EOF){
-    if(c == '\n'){
-      x++;
-      y = 0;
-      continue;
-    }
-    board[x][y] = c;
-    y++;
-  }
-  
-  fclose(fh);
-}
-
-
 void _testTree()
 {
   // create 3 lvls for the initial tree
