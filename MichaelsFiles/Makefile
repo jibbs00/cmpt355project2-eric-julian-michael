@@ -3,11 +3,8 @@ SHELL=/bin/bash
 CC=gcc
 CFLAGS=-std=c99 -Wall -g
 
-sample: main.c tree.o
+game: main.c tree.o move.o
 	$(CC) $(CFLAGS) -o $@ $^
-
-#tree: treemain.c tree.o func.o
-#	$(CC) $(CFLAGS) -o $@ $^
 
 # use of wildcards to compile all object files
 %.o: %.c %.h
@@ -15,5 +12,5 @@ sample: main.c tree.o
 
 # command to remove all unwanted files, object, and executables as well
 clean:
-	$(RM) -f *~ *# *.o sample tree
+	$(RM) -f *~ *# *.o game
 
