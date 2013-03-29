@@ -205,12 +205,12 @@ struct List * actions( const struct State * state )
 
 struct State * result( const struct State * state, const struct Move * action )
 {
-    char newBoard[SIZE][SIZE];
+    char new_board[SIZE][SIZE];
     
     /* copy old board */
     for( int i = 0; i < SIZE; i++ )
         for( int j = 0; j < SIZE; j++ )
-            newBoard[ i ][ j ] = state->board[ i ][ j ];
+            new_board[ i ][ j ] = state->board[ i ][ j ];
 
     /* validate move */ 
     if( validate_action( state, action ) )
@@ -223,24 +223,27 @@ struct State * result( const struct State * state, const struct Move * action )
             /* blank column */
             if( action->start_col < action->end_col )
                 for( int i = action->start_col; i < action->end_col; i++ )
-                    newBoard[ action->start_row ][ i ] = 'O';
+                    new_board[ action->start_row ][ i ] = 'O';
             else
-                for( int i = action->end_col; i < action->start_col; i++ )
-                    newBoard[ action->start_row ][ i ] = '0';
+                for( int i = action->start_col; i > action->end_col; i-- )
+                    new_board[ action->start_row ][ i ] = '0';
         }
         else
         {
             /* blank row */
             if( action->start_row < action->end_row )
                 for( int i = action->start_row; i < action->end_row; i++ )
-                    newBoard[ action->start_row + i ][ action->start_col ] = 'O';
+                    new_board[ i ][ action->start_col ] = 'O';
             else
-                for( int i = action->end_row; i < action->start_row; i++ )
-                    newBoard[ action->end_row + i ][ action->start_col ] = '0';
+                for( int i = action->start_row; i > action->end_row; i-- )
+                    new_board[ i ][ action->start_col ] = '0';
         }
 
+        /* set current piece */
+        new_board[ action->end_row ][ action->end_col ] = state->player;
+
         /* return changed board */
-        return new_state( newBoard, opposite_player( state->player ) );
+        return new_state( new_board, opposite_player( state->player ) );
     }
 
     return NULL;
@@ -248,52 +251,78 @@ struct State * result( const struct State * state, const struct Move * action )
 
 int validate_action( const struct State * state, const struct Move * action )
 {
-    struct List * moves;
+    struct List * moves = new_list();
+    struct List * temp_moves;
+    struct ListNode * current;
+    int is_valid = 0;
 
-    /* screen move */
-    if( action->start_row == action->end_row && action->start_col != action->end_col )
+    /* combine all actions */
+    for( int i = 0; i < SIZE; i++ )
     {
-        /* potentially valid move */
-        /* check if there is a move in the row */
-        if( action->start_col < action->end_col )
-            moves = actions_left( state, action->start_row );
-        else
-            moves = actions_right( state, action->start_row );
+        /* actions right */
+        temp_moves = actions_right( state, i );
 
-        struct ListNode * current = moves->head;
+        current = temp_moves->head; 
         while( current != NULL )
         {
-            if( compare_move( current->data, action ) == 1 )
-            {
-                delete_list( &moves );
-                return 1;
-            }
+            add_front( &moves, current->data );
             current = current->next;
         }
-    
-    }
-    else if( action->start_col == action->end_col && action->start_row != action->end_row )
-    {
-        /* potentially valid move */
-        /* check if there is move in the column */
-        if( action->start_row < action->end_row )
-            moves = actions_down( state, action->start_col );
-        else
-            moves = actions_up( state, action->start_col );
 
-        struct ListNode * current = moves->head;
+        delete_list( &temp_moves );
+
+        /* actions left */
+        temp_moves = actions_left( state, i );
+
+        current = temp_moves->head; 
         while( current != NULL )
         {
-            if( compare_move( current->data, action ) )
-            {
-                delete_list( &moves );
-                return 1;
-            }
+            add_front( &moves, current->data );
             current = current->next;
         }
+
+        delete_list( &temp_moves );
+
+        /* actions up */
+        temp_moves = actions_up( state, i );
+
+        current = temp_moves->head; 
+        while( current != NULL )
+        {
+            add_front( &moves, current->data );
+            current = current->next;
+        }
+
+        delete_list( &temp_moves );
+
+        /* actions down */
+        temp_moves = actions_down( state, i );
+
+        current = temp_moves->head; 
+        while( current != NULL )
+        {
+            add_front( &moves, current->data );
+            current = current->next;
+        }
+
+        delete_list( &temp_moves );
     }
 
-    return 0;
+    /* check if moves is in possible actions */
+    current = moves->head;
+    while( current != NULL )
+    {
+        if( compare_move( current->data, action ) == 1 )
+        {
+            is_valid = 1;
+            break;
+        }
+        current = current->next;
+    }
+
+    delete_list( &moves );
+
+    return is_valid;
 }
 
 int terminal_test( const struct State * state )
@@ -318,6 +347,6 @@ char opposite_player( char player )
 {
     if( player == 'B' )
         return 'W';
-    else
+    else if( player == 'W' )
         return 'B';
 }

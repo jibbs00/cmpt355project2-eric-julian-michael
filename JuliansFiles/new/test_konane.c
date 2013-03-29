@@ -62,7 +62,19 @@ int main( void )
     }
 
     /* get the result of a move */
+    printf( "Result of move: \n" );
+    struct State * new_state;
+    current = moves->head;
+    while( current != NULL )
+    {
+        print_move( current->data );
 
+        new_state = result( state, current->data );
+        print_state( new_state );
+        free( new_state );
+
+        current = current->next;
+    }
 
     return EXIT_SUCCESS;
 }
