@@ -26,6 +26,9 @@ void delete_list( struct List ** list )
 
         free( temp );
     }
+
+    free( (*list ) );
+    *list = NULL;
 }
 
 void add_front( struct List ** list, void * data )
@@ -39,6 +42,7 @@ void add_front( struct List ** list, void * data )
     if( (*list)->count == 0 )
     {
         (*list)->tail = node;
+        (*list)->head = node;
     }
     else
     {

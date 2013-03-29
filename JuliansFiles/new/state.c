@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -29,4 +30,24 @@ int compare_state( const struct State * a, const struct State * b )
                 return 0;
 
     return 1;
+}
+
+void print_state( const struct State * state )
+{
+    printf( "Current Player: %c\n", state->player );
+    
+    /* print board */
+    printf( "  " );
+    for( int i = 0; i < SIZE; i++ )
+        printf( "%d ", i );
+    printf( "\n" );
+
+    for( int i = 0; i < SIZE; i++ )
+    {
+        printf( "%d ", i );
+        for( int j = 0; j < SIZE; j++ )
+            printf( "%c ", state->board[i][j] );
+        printf( "\n" );
+    }
+    printf( "\n" );
 }

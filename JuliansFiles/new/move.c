@@ -1,9 +1,12 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
 #include "move.h"
+
 
 struct Move * new_move( int start_row, int start_col, int end_row, int end_col )
 {
@@ -115,4 +118,14 @@ int compare_move( const struct Move * a, const struct Move * b )
              a->start_col == b->start_col &&
              a->end_row == b->end_row &&
              a->end_col == b->end_col );
+}
+
+
+void print_move( const struct Move * move )
+{
+    printf( "(%d,%d),(%d,%d)\n", 
+                move->start_row,
+                move->start_col,
+                move->end_row,
+                move->end_col );
 }
