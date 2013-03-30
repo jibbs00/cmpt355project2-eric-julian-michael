@@ -63,15 +63,50 @@ int main( void )
 
     /* get the result of a move */
     printf( "Result of move: \n" );
-    struct State * new_state;
+    struct State * new_state1;
     current = moves->head;
     while( current != NULL )
     {
         print_move( current->data );
 
-        new_state = result( state, current->data );
-        print_state( new_state );
-        free( new_state );
+        new_state1 = result( state, current->data );
+        print_state( new_state1 );
+        free( new_state1 );
+
+        current = current->next;
+    }
+
+    board[ 2 ][ 1 ] = 'O';
+    board[ 3 ][ 4 ] = 'O';
+
+    struct State * state4;
+    current = moves->head;
+    while( current != NULL )
+    {
+        print_move( current->data );
+
+        state4 = new_state( board, player2 );
+        print_state( state4 );
+
+        /* list moves */
+        struct List * moves2 = actions( state4 );
+        struct ListNode * current2 = moves2->head;
+
+        printf( "List of valid moves:\n" );
+        while( current2 != NULL )
+        {
+            print_move( current2->data );
+
+            human_move = translate_move( current2->data );
+            printf( "%s\n", human_move );
+            free( human_move );
+
+            current2 = current2->next;
+        }
+
+        free( moves2 );
+
+        free( state4 );
 
         current = current->next;
     }

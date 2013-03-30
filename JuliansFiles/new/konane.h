@@ -1,3 +1,7 @@
+/**
+ * @file konane.h
+ * @author Julian Martinez del Campo
+ */
 #ifndef _KONANE_H_
 #define _KONANE_H_
 

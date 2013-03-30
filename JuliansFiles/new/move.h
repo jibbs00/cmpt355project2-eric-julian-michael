@@ -1,6 +1,13 @@
+/**
+ * @file move.h
+ * @author Julian Martinez del Campo
+ *
+ * This file provides a move in konane
+ */
 #ifndef _MOVE_H_
 #define _MOVE_H_
 
+/** A move */
 struct Move {
     int start_row;
     int start_col;

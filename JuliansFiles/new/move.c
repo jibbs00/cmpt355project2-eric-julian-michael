@@ -1,3 +1,9 @@
+/**
+ * @file move.c
+ * @author Julian Martinez del Campo
+ *
+ * Provides an implementation of moves
+ */
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
@@ -8,6 +14,15 @@
 #include "move.h"
 
 
+/**
+ * Create a new move
+ *
+ * @param start_row the starting row
+ * @param start_col the starting column
+ * @param end_row the ending row
+ * @param end_col the ending column
+ * @return a new move containing the start row, start col, end row, and end col
+ */
 struct Move * new_move( int start_row, int start_col, int end_row, int end_col )
 {
     struct Move * move = calloc( 1, sizeof( struct Move ) );
@@ -21,6 +36,12 @@ struct Move * new_move( int start_row, int start_col, int end_row, int end_col )
     return move;
 }
 
+/**
+ * Convert a row number to a string
+ *
+ * @param i the row number
+ * @return the row as a letter, if row is invalid return null
+ */
 static char * row2letter( int i )
 {
     static char * letters[ 8 ] = { "A", "B", "C", "D", "E", "F", "G", "H" };
@@ -31,6 +52,12 @@ static char * row2letter( int i )
     return letters[i];
 }
 
+/**
+ * Translate a move into a string
+ *
+ * @param move a move to convert to string
+ * @return a string in human readable form
+ */
 char * translate_move( const struct Move * move )
 {
     char * human_readable = calloc( 11, sizeof( char ) );
@@ -45,12 +72,24 @@ char * translate_move( const struct Move * move )
     return human_readable;
 }
 
+/**
+ * Convert a letter to a row
+ *
+ * @param letter a letter to convert a row number
+ * @return the row number
+ */
 static int letter2row( char * letter )
 {
     char l = letter[0];
     return (int) l - 65;
 }
 
+/**
+ * Translate an input move
+ *
+ * @param move a move input by the user
+ * @return a move
+ */
 struct Move * translate_in_move( const char * move )
 {
     int length = strnlen( move, 20 );
@@ -112,6 +151,13 @@ struct Move * translate_in_move( const char * move )
     return translated_move;
 }
 
+/**
+ * Compare a move
+ *
+ * @param a a move
+ * @param b a move
+ * @return 1 if moves are the same, else return 0
+ */
 int compare_move( const struct Move * a, const struct Move * b )
 {
     return ( a->start_row == b->start_row &&
@@ -120,7 +166,11 @@ int compare_move( const struct Move * a, const struct Move * b )
              a->end_col == b->end_col );
 }
 
-
+/**
+ * Print a move
+ *
+ * @param move a move to print
+ */
 void print_move( const struct Move * move )
 {
     printf( "(%d,%d),(%d,%d)\n", 

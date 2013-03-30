@@ -1,3 +1,9 @@
+/**
+ * @file konane.c
+ * @author Julian Martinez del Campo
+ *
+ * Provides an implementation of the game of konane
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -7,6 +13,13 @@
 #include "move.h"
 #include "list.h"
 
+/**
+ * Find possible actions right on a row
+ *
+ * @param state a game state
+ * @param row the row to check
+ * @return a list of actions
+ */
 static struct List * actions_right( const struct State * state, int row )
 {
     int idx = 0;
@@ -41,6 +54,13 @@ static struct List * actions_right( const struct State * state, int row )
     return actions;
 }
 
+/**
+ * Find possible actions left on a row
+ *
+ * @param state a game state
+ * @param row the row to check
+ * @return a list of actions
+ */
 static struct List * actions_left( const struct State * state, int row )
 {
     int idx = SIZE-1;
@@ -74,6 +94,13 @@ static struct List * actions_left( const struct State * state, int row )
     return actions;
 }
 
+/**
+ * Find possible actions down on a column
+ *
+ * @param state a game state
+ * @param col the column to check
+ * @return a list of actions
+ */
 static struct List * actions_down( const struct State * state, int col )
 {
     int idx = 0;
@@ -108,6 +135,13 @@ static struct List * actions_down( const struct State * state, int col )
     return actions;
 }
 
+/**
+ * Find possible actions up on a column
+ *
+ * @param state a game state
+ * @param col the column to check
+ * @return a list of actions
+ */
 static struct List * actions_up( const struct State * state, int col )
 {
     int idx = SIZE;
@@ -141,6 +175,12 @@ static struct List * actions_up( const struct State * state, int col )
     return actions;
 }
 
+/**
+ * Find all possible actions/moves in a state
+ *
+ * @param state a state to check for moves
+ * @return a list of actions/moves
+ */
 struct List * actions( const struct State * state )
 {
 
@@ -203,6 +243,16 @@ struct List * actions( const struct State * state )
     return moves;
 }
 
+/**
+ * Transition model
+ *
+ * Find the result of applying a move to a state
+ *
+ * @param state a state
+ * @param action an action
+ * @return a new state, which is the result of applying an action to state, if
+ *  action is invalid or no move is possible return null.
+ */
 struct State * result( const struct State * state, const struct Move * action )
 {
     char new_board[SIZE][SIZE];
@@ -249,6 +299,13 @@ struct State * result( const struct State * state, const struct Move * action )
     return NULL;
 }
 
+/**
+ * Validate an action
+ *
+ * @param state a state to check
+ * @param action a move to perform
+ * @return 1 if action is valid, else return 0
+ */
 int validate_action( const struct State * state, const struct Move * action )
 {
     struct List * moves = new_list();
@@ -325,6 +382,12 @@ int validate_action( const struct State * state, const struct Move * action )
     return is_valid;
 }
 
+/**
+ * Check if the game is over
+ *
+ * @param state a state to check
+ * @return 1 if game is over, else return 0
+ */
 int terminal_test( const struct State * state )
 {
     /* if there are no more moves for other player, game is done */
@@ -343,6 +406,12 @@ int utility( const struct State * state )
 {
 }
 
+/**
+ * Get the opposite player
+ *
+ * @param player the current player
+ * @return the opposite player
+ */
 char opposite_player( char player )
 {
     if( player == 'B' )
