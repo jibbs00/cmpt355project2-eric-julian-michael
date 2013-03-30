@@ -40,27 +40,29 @@ int main( void )
     board[ 3 ][ 3 ] = 'O';
 
     /* create a new state */
-    struct State * state = new_state( board, player2 );
+    struct State * state = new_state( board, player1 );
     
-    printf( "Current player: %c\n", state->player );
-    for( int i = 0; i < SIZE; i++ )
-    {
-        for( int j = 0; j < SIZE; j++ )
-        {
-            printf( "%c", state->board[i][j] );
-        }
-        printf( "\n" );
-    }
+    print_state( state );
 
     /* list moves */
     struct List * moves = actions( state );
     struct ListNode * current = moves->head;
+    char * human_move;
 
+    printf( "List of valid moves:\n" );
     while( current != NULL )
     {
         print_move( current->data );
+
+        human_move = translate_move( current->data );
+        printf( "%s\n", human_move );
+        free( human_move );
+
         current = current->next;
     }
+
+    /* get the result of a move */
+
 
     return EXIT_SUCCESS;
 }

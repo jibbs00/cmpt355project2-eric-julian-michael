@@ -1,9 +1,12 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
 #include "move.h"
+
 
 struct Move * new_move( int start_row, int start_col, int end_row, int end_col )
 {

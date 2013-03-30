@@ -24,3 +24,7 @@ test_game_node: test_game_node.o game_node.o state.o list.o
 
 test_konane.o: test_konane.c konane.h state.h game_node.h move.h list.h
 test_konane: test_konane.o konane.o state.o game_node.o move.o list.o
+
+clean:
+	$(RM) *.o
+	$(RM) test_move test_list test_game_node test_state test_konane
