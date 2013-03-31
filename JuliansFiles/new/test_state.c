@@ -4,6 +4,7 @@
 
 #include "konane.h"
 #include "state.h"
+#include "utility.h"
 
 int main( void )
 {
@@ -91,9 +92,9 @@ int main( void )
     print_state( state2 );
     print_state( state3 );
 
-    free( state );
-    free( state2 );
-    free( state3 );
+    Free( state, sizeof( struct State ) );
+    Free( state2, sizeof( struct State ) );
+    Free( state3, sizeof( struct State ) );
 
     return EXIT_SUCCESS;
 }

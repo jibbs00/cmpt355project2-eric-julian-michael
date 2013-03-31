@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "move.h"
+#include "utility.h"
 
 int main( void )
 {
@@ -36,8 +37,8 @@ int main( void )
     printf( "same = %d\n", compare_move( move, move ) );
     printf( "different = %d\n", compare_move( move, human_move ) );
 
-    free( human_readable );
-    free( move );
+    Free( human_readable, sizeof( char ) * 11 );
+    Free( move, sizeof( struct Move ) );
 
     return EXIT_SUCCESS;
 }

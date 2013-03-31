@@ -20,5 +20,6 @@ char * translate_move( const struct Move * move );
 struct Move * translate_in_move( const char * move );
 int compare_move( const struct Move * a, const struct Move * b );
 void print_move( const struct Move * move );
+char row2letter( int i );
 
 #endif /* _MOVE_H_ */

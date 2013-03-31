@@ -10,6 +10,8 @@
 
 #include "konane.h"
 #include "state.h"
+#include "move.h"
+#include "utility.h"
 
 /**
  * Create a new state
@@ -20,7 +22,7 @@
  */
 struct State * new_state( char board[][SIZE], char player )
 {
-    struct State * state = calloc( 1, sizeof( struct State ) );
+    struct State * state = Calloc( 1, sizeof( struct State ) );
     assert( state );
 
     for( int i = 0 ; i < SIZE; i++ )
@@ -59,20 +61,27 @@ int compare_state( const struct State * a, const struct State * b )
  */
 void print_state( const struct State * state )
 {
-    printf( "Current Player: %c\n", state->player );
-    
     /* print board */
-    printf( "  " );
+    printf( "\n" );
+    printf( "  | " );
     for( int i = 0; i < SIZE; i++ )
-        printf( "%d ", i );
+        printf( "%d ", i + 1 );
+    printf( "\n" );
+    printf( "--+" );
+    for( int i = 0; i < SIZE; i++ )
+        printf( "--" );
     printf( "\n" );
 
     for( int i = 0; i < SIZE; i++ )
     {
-        printf( "%d ", i );
+        //printf( "%d ", i );
+        printf( "%c | ", row2letter( i ) );
         for( int j = 0; j < SIZE; j++ )
             printf( "%c ", state->board[i][j] );
         printf( "\n" );
     }
     printf( "\n" );
+    
+    /* print player */
+    printf( "Current Player: %c\n\n", state->player );
 }

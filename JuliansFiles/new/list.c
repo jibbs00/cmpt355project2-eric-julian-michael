@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "list.h"
+#include "utility.h"
 
 /**
  * Create a new list
@@ -16,7 +17,7 @@
  */
 struct List * new_list( void )
 {
-    struct List * list = calloc( 1, sizeof( struct List ) );
+    struct List * list = Calloc( 1, sizeof( struct List ) );
 
     list->head = NULL;
     list->tail = NULL;
@@ -40,10 +41,10 @@ void delete_list( struct List ** list )
         temp = current;
         current = current->next;
 
-        free( temp );
+        Free( temp, sizeof( struct ListNode ) );
     }
 
-    free( (*list ) );
+    Free( (*list ), sizeof( struct List ) );
     *list = NULL;
 }
 
@@ -55,7 +56,7 @@ void delete_list( struct List ** list )
  */
 void add_front( struct List ** list, void * data )
 {
-    struct ListNode * node = calloc( 1, sizeof( struct List * ) );
+    struct ListNode * node = Calloc( 1, sizeof( struct List * ) );
     assert( node );
 
     node->data = data;

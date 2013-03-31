@@ -11,8 +11,9 @@
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
-#include "move.h"
 
+#include "move.h"
+#include "utility.h"
 
 /**
  * Create a new move
@@ -25,7 +26,7 @@
  */
 struct Move * new_move( int start_row, int start_col, int end_row, int end_col )
 {
-    struct Move * move = calloc( 1, sizeof( struct Move ) );
+    struct Move * move = Calloc( 1, sizeof( struct Move ) );
     assert( move );
 
     move->start_row = start_row;
@@ -42,12 +43,12 @@ struct Move * new_move( int start_row, int start_col, int end_row, int end_col )
  * @param i the row number
  * @return the row as a letter, if row is invalid return null
  */
-static char * row2letter( int i )
+char row2letter( int i )
 {
-    static char * letters[ 8 ] = { "A", "B", "C", "D", "E", "F", "G", "H" };
+    static char letters[ 8 ] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
 
     if( i < 0 || i > 8 )
-        return NULL;
+        return 0;
 
     return letters[i];
 }
@@ -60,14 +61,14 @@ static char * row2letter( int i )
  */
 char * translate_move( const struct Move * move )
 {
-    char * human_readable = calloc( 11, sizeof( char ) );
+    char * human_readable = Calloc( 11, sizeof( char ) );
     assert( human_readable );
     
-    snprintf( human_readable, 11, "%s%d - %s%d",
+    snprintf( human_readable, 11, "%c%d - %c%d",
                 row2letter( move->start_row ),
-                move->start_col,
+                move->start_col + 1,
                 row2letter( move->end_row ),
-                move->end_col );
+                move->end_col + 1 );
 
     return human_readable;
 }
@@ -144,9 +145,9 @@ struct Move * translate_in_move( const char * move )
         return NULL;
 
     struct Move * translated_move = new_move( letter2row( start_row ), 
-            atoi( start_col ),
+            atoi( start_col ) - 1,
             letter2row( end_row ),
-            atoi( end_col ) );
+            atoi( end_col ) - 1 );
 
     return translated_move;
 }
