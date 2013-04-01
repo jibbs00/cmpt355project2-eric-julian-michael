@@ -3,7 +3,7 @@ SHELL=/bin/bash
 CC=gcc
 CFLAGS=-std=c99 -Wall -g
 
-game: main.c tree.o move.o
+game: main.c tree.o move.o utility.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 # use of wildcards to compile all object files

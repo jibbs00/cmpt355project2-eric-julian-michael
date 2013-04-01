@@ -30,6 +30,10 @@ extern char opponent;
 /* function to initialize the board by reading in values from a file */
 void _setupboard(char *filename);
 
+/* function to get random number to pick children that have the same utility
+   value when an agent makes a decision */
+int random_child (unsigned int n);
+
 /* functions to create, delete, and manipulate tree structure */
 void copy_state(TNode *node, char state[][BOARD_SIZE]);
 void create_node(TNode * parent, char state[][BOARD_SIZE]);

@@ -1,6 +1,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
+#include<time.h>
 #include<assert.h>
 #include"tree.h"
 #include"move.h"
@@ -33,6 +34,15 @@ void _setupboard(char *filename)
   }
   
   fclose(fh);
+}
+
+//function generates random number between 0 and N
+int random_child (unsigned int n)
+{
+  /* seed with each call */
+  srand(time(NULL));
+  /* produce random number [0,n] */
+  return rand() % n;
 }
 
 
@@ -507,7 +517,7 @@ void MIN_MAX(char MAX, char MIN, TNode *node)
       //get utility value for current child node (HEURISTIC: your moves left - opponents moves left)
       child->utility_val = evaluation(MIN,MAX,child->state) - evaluation(MAX,MIN,child->state);
       
-      //reset utility of parent based on higher child values   
+      //reset utility of parent based on higher child values
       if(child->utility_val > parent_utility){
 	parent_utility = child->utility_val;
       }
@@ -528,37 +538,57 @@ void MAKE_DECISION(char player, char opponent, char current_state[][BOARD_SIZE])
 {
   // *** ASSUMES tree_head is already allocated and is a node (done in main.c)
 
-  /* variable for state chosen by agent */
-  TNode *next_state = (TNode *)malloc( sizeof( TNode ) );
-  assert( next_state != NULL );
-  memset(next_state,0,sizeof( TNode ) );
-
+  /* variable  to add possible next states to as children chosen by agent */
+  TNode *temp_head = (TNode *)malloc( sizeof( TNode ) );
+  assert( temp_head != NULL );
+  memset(temp_head,0,sizeof( TNode ) );
+  
   //call function to build tree (MIN_MAX) (propagates all values up tree)
   MIN_MAX(player,opponent,tree_head);
 
   //get utility value propagated up to tree_head
   int head_utility = tree_head->utility_val;
-
+  printf("parent util: %d\n",head_utility);
   //iterate through immediate children of tree_head, finding matching utility values
   TNode *child = tree_head->child_head;
+  int child_count = 0;
   while(child != NULL){
-    //if childs utility values matches tree_head (just picks first one matched for now) 
+    //if child determined to have th same utility value as the parent, create a temporary
+    //node for it and attach it to the temporary head and add to the child count
     if(child->utility_val == head_utility){
-      copy_state(next_state,child->state);
-      break;
+      create_node(temp_head,child->state);
+      child_count++;
     }
+    printf("child util %d\n",child->utility_val);
     child = child->next;
   }
 
+  
   //delete tree for current state
   delete_tree(tree_head);
   
-  //create a tree node for the state that has 
-  //been decided by the agent to be carried out
-  create_node(tree_head,next_state->state);
+
+  //generate a random number between 0 and child_count
+  int decision = random_child(child_count); 
+
+  printf("child count: %d --- random: %d\n",child_count,decision);
+
+  //iterate through the possible children states that may be chosen by the agent, until child position
+  //matches the random number produced
+  child = temp_head->child_head;
+  int index = 0;
+  while(child != NULL){
+    //***if index of child in linked list matches random number, 
+    //***create a tree node for that state that has been decided upon by the agent
+    if(index == decision){
+      create_node(tree_head,child->state);
+    }
+    index++;
+    child = child->next;
+  }
 
   //clean up memory
-  free(next_state);
+  delete_tree(temp_head);
 
 }
 
