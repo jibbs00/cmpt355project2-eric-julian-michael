@@ -12,6 +12,8 @@ extern char board[BOARD_SIZE][BOARD_SIZE];
 extern char player;
 extern char opponent;
 
+int search_depth = 2;
+
 //function reads board in from files and initializes board[][]
 void _setupboard(char *filename)
 {
@@ -145,13 +147,26 @@ void print_node(TNode * n)
   printf(" UTILITY VAL: %d\n",n->utility_val);
   printf(" STATE:\n");
 
-  for(int x = 0; x < BOARD_SIZE; x++){
-     for(int y = 0; y < BOARD_SIZE; y++){
-       printf("%c",n->state[x][y]);
-     }
-     printf("\n");
+  /* print board */
+  printf( "\n" );
+  printf( "  | " );
+  for( int i = 0; i < BOARD_SIZE; i++ )
+      printf( "%d ", i + 1 );
+  printf( "\n" );
+  printf( "--+" );
+  for( int i = 0; i < BOARD_SIZE; i++ )
+      printf( "--" );
+  printf( "\n" );
+
+  for( int i = 0; i < BOARD_SIZE; i++ )
+  {
+    //row2letter found in move.c
+    printf( "%c | ", row2letter( i ) );
+    for( int j = 0; j < BOARD_SIZE; j++ )
+        printf( "%c ", n->state[i][j] );
+    printf( "\n" );
   }
-  printf("\n");
+  printf( "\n" );
 
 }
 
@@ -264,22 +279,17 @@ void determine_children(char friendly, char enemy, TNode *parent)
   for(row = 0; row < BOARD_SIZE; row++){
 
     /* ----- FORWARDS ----- */
-    /* based on friendly, decide what col index to start from */
-    if(parent->state[row][0] == friendly)
-      col = 0;
-    else
-      col = 1;
-
     /* check if adjacent friendly spot is open,
 	 if so move piece */
-    for(; (col < BOARD_SIZE) 
-	  && ((col + 2) < BOARD_SIZE)
-	  && (parent->state[row][col + 1] == enemy)
-	  && (parent->state[row][col + 2] == 'O'); col += 2){
+    for(col = 0; (col < BOARD_SIZE) && ((col + 2) < BOARD_SIZE); col++){
 	/* change state */
+      if( (parent->state[row][col] == friendly)
+	 && (parent->state[row][col + 1] == enemy) 
+	 && (parent->state[row][col + 2] == 'O')){
 	new_node->state[row][col] = 'O';
 	new_node->state[row][col + 1] = 'O';
 	new_node->state[row][col + 2] = friendly;
+      }
     }
     /* check if board has been modified, if so create node */
     if(compare_nodes(new_node,parent)){
@@ -291,22 +301,17 @@ void determine_children(char friendly, char enemy, TNode *parent)
 
 
     /* ----- BACKWARDS ----- */
-    /* based on friendly, decide what col index to start from */
-    if(parent->state[row][BOARD_SIZE - 1] == friendly)
-      col = BOARD_SIZE - 1;
-    else
-      col = BOARD_SIZE - 2;
-
       /* check if adjacent friendly spot is open,
 	 if so move piece */
-    for(; (col > 0)
-	  && ((col - 2) >= 0)
-	  && (parent->state[row][col - 1] == enemy)
-	  && (parent->state[row][col - 2] == 'O') ; col -= 2){
+    for(col = BOARD_SIZE - 1; (col > 0) && ((col - 2) >= 0) ; col--){
 	/*change state */
+      if( (parent->state[row][col] == friendly)
+	 && (parent->state[row][col - 1] == enemy) 
+	 && (parent->state[row][col - 2] == 'O')){
 	new_node->state[row][col] = 'O';
 	new_node->state[row][col - 1] = 'O';
 	new_node->state[row][col - 2] = friendly;
+      }
     }
     /* check if board has been modified, if so create node */
     if(compare_nodes(new_node,parent)){
@@ -324,22 +329,17 @@ void determine_children(char friendly, char enemy, TNode *parent)
   for(col = 0; col < BOARD_SIZE; col++){
 
     /* ----- FORWARDS ----- */
-    /* based on friendly, decide what col index to start from */
-    if(parent->state[0][col] == friendly)
-      row = 0;
-    else
-      row = 1;
-
       /* check if adjacent friendly spot is open,
 	 if so move piece */
-    for(; (row < BOARD_SIZE)
-	  && ((row + 2) < BOARD_SIZE)
-	  && (parent->state[row + 1][col] == enemy)
-	  && (parent->state[row + 2][col] == 'O'); row += 2){
+    for(row = 0; (row < BOARD_SIZE) && ((row + 2) < BOARD_SIZE); row++){
 	/* change state */
+      if( (parent->state[row][col] == friendly)
+	 && (parent->state[row + 1][col] == enemy) 
+	 && (parent->state[row + 2][col] == 'O')){
 	new_node->state[row][col] = 'O';
 	new_node->state[row + 1][col] = 'O';
 	new_node->state[row + 2][col] = friendly;
+      }
     }
     /* check if board has been modified, if so create node */
     if(compare_nodes(new_node,parent)){
@@ -348,26 +348,21 @@ void determine_children(char friendly, char enemy, TNode *parent)
       /* reset new_node to parent  */
       copy_state(new_node,parent->state);
     }
-
+    
     /* ----- BACKWARDS ----- */
-    /* based on friendly, decide what col index to start from */
-    if(parent->state[BOARD_SIZE - 1][col] == friendly)
-      row = BOARD_SIZE - 1;
-    else
-      row = BOARD_SIZE - 2;
-
       /* check if adjacent friendly spot is open,
 	 if so move piece */
-    for(; (row > 0) 
-	  && ((row - 2) >= 0)
-	  && (parent->state[row - 1][col] == enemy)
-	  && (parent->state[row - 2][col] == 'O'); row -= 2){
+    for(row = BOARD_SIZE - 1; (row > 0) && ((row - 2) >= 0); row--){
 	/*change state */
+      if( (parent->state[row][col] == friendly)
+	 && (parent->state[row - 1][col] == enemy) 
+	 && (parent->state[row - 2][col] == 'O')){
 	new_node->state[row][col] = 'O';
 	new_node->state[row - 1][col] = 'O';
 	new_node->state[row - 2][col] = friendly;
+      }
     }
-    /* check if board has been modified, if so create node */
+    /* check if board has bveen modified, if so create node */
     if(compare_nodes(new_node,parent)){
       /* create child node */
       create_node(parent,new_node->state);
@@ -392,7 +387,7 @@ int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
  //goes through the board horizontally
  while(count<size){
      while(counter<size){
-       if(counter+2<=size){
+       if(counter+2<size){
 	 if((ecolor==board[count][counter])
 	    && (fcolor==board[count][counter+1])
 	    && (board[count][counter+2]=='O'))
@@ -420,7 +415,7 @@ int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
  //goes through the board vertically
  while(counter<size){
    while(count<size){
-     if(count+2<=size){
+     if(count+2<size){
        if((ecolor==board[count][counter])
 	  && (fcolor==board[count+1][counter])
 	  && (board[count+2][counter]=='O'))
@@ -470,11 +465,11 @@ int Terminal_Test(char current, char opponent, char state[][BOARD_SIZE])
 
   //else, evaulate the number of move left for the opponent on the board
   int eval = evaluation(current,opponent,state);
-  if(current == 'B'){
+  //if(current == 'B'){
     //multiple by -1 if looking for MAX value as will reurn max value less than
     //zero, so multiple by -1 to get positive integer
-    eval *= -1;
-  }
+    //eval *= -1;
+  //}
   //else if looking for MIN value, eval will be the closet value to 0
   
   //if terminal state found, return 0 (indicating current won, else return 1)
@@ -486,7 +481,7 @@ int Terminal_Test(char current, char opponent, char state[][BOARD_SIZE])
 }
 
 /*** MIN-MAX ALGORITHM IMPLEMENTATION ***/
-void MIN_MAX(char MAX, char MIN, TNode *node)
+void MIN_MAX(char MAX, char MIN, int depth, TNode *node)
 {
   //input: current state of the game
  
@@ -499,29 +494,34 @@ void MIN_MAX(char MAX, char MIN, TNode *node)
 
   //create the children for the current state passed
   determine_children(MAX,MIN,node);
-    
+  printf("determining children!!!\n");
+
+  //increment the depth for the next child iteration
+  depth++;
+  
   //variable for utility value that will be assigned to the parent from the best child
   int parent_utility = node->utility_val;
   
   //***ITERATE THROUGH SUCCESSORS OF CURRENT STATE, RECURSE AND DOES DEPTH FIRST SEARCH (3 levels)
   TNode *child = node->child_head;
-  if(child == NULL){
+  if(child == NULL || depth == search_depth){
     //get utility value for current child node (HEURISTIC: your moves left - opponents moves left)
     parent_utility = evaluation(MIN,MAX,node->state) - evaluation(MAX,MIN,node->state);
   }
   else{
     while(child != NULL){
-
-      MIN_MAX(MAX,MIN,child);
+      
+      MIN_MAX(MAX,MIN,depth,child);
    
       //get utility value for current child node (HEURISTIC: your moves left - opponents moves left)
       child->utility_val = evaluation(MIN,MAX,child->state) - evaluation(MAX,MIN,child->state);
       
-      //reset utility of parent based on higher child values
+      //reset utility of parent based on higher child values      
       if(child->utility_val > parent_utility){
 	parent_utility = child->utility_val;
       }
 
+      depth--;
       child = child->next;
     }
   }
@@ -534,7 +534,7 @@ void MIN_MAX(char MAX, char MIN, TNode *node)
 }
 
 
-void MAKE_DECISION(char player, char opponent, char current_state[][BOARD_SIZE])
+void MAKE_DECISION(char player, char opponent, int depth, char current_state[][BOARD_SIZE])
 {
   // *** ASSUMES tree_head is already allocated and is a node (done in main.c)
 
@@ -544,7 +544,7 @@ void MAKE_DECISION(char player, char opponent, char current_state[][BOARD_SIZE])
   memset(temp_head,0,sizeof( TNode ) );
   
   //call function to build tree (MIN_MAX) (propagates all values up tree)
-  MIN_MAX(player,opponent,tree_head);
+  MIN_MAX(player,opponent,depth,tree_head);
 
   //get utility value propagated up to tree_head
   int head_utility = tree_head->utility_val;
@@ -560,6 +560,7 @@ void MAKE_DECISION(char player, char opponent, char current_state[][BOARD_SIZE])
       child_count++;
     }
     printf("child util %d\n",child->utility_val);
+    print_node(child);
     child = child->next;
   }
 
@@ -582,6 +583,7 @@ void MAKE_DECISION(char player, char opponent, char current_state[][BOARD_SIZE])
     //***create a tree node for that state that has been decided upon by the agent
     if(index == decision){
       create_node(tree_head,child->state);
+      break;
     }
     index++;
     child = child->next;
@@ -597,26 +599,30 @@ void MAKE_DECISION(char player, char opponent, char current_state[][BOARD_SIZE])
 void Build_Tree(int level, char cur_state[][BOARD_SIZE])
 {
   //TESTING FOR NOW
+  char agent = 'W';
+  char player = 'B';
 
   /*create head node */
   create_node(tree_head,cur_state);
-  //make first move (user made)
-  tree_head->state[3][3] = 'O';
   
   //testing for a given state
-  /*tree_head->state[1][3] = 'O';
-  tree_head->state[3][3] = 'O';
-  tree_head->state[2][3] = 'O';
-  tree_head->state[5][3] = 'O';
-  tree_head->state[5][5] = 'O';
-  tree_head->state[5][7] = 'O';
-  //determine_children(tree_head,'B','W');
-
-  tree_head->utility_val = evaluation('B','W',tree_head->state);
-  print_node(tree_head);
+  /*tree_head->state[1][1] = 'O';
+  tree_head->state[2][1] = 'O';
+  tree_head->state[3][0] = 'O';
+  tree_head->state[3][1] = 'O';
   */
+  
+  tree_head->state[3][3] = 'O';
 
-  MIN_MAX('B','W',tree_head);
+  printf("TEST NODE:\n");
+  print_node(tree_head);
+
+  printf("agents moves left: %d\n",evaluation(player,agent,tree_head->state));
+  printf("players moves left: %d\n",evaluation(agent,player,tree_head->state));
+  
+  //determine_children(agent,player,tree_head);
+
+  MIN_MAX(agent,player,0,tree_head);
 
   traverse_tree(tree_head,print_node,NULL,NULL);
   delete_tree(tree_head);

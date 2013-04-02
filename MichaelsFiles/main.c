@@ -17,8 +17,6 @@ TNode * tree_head = NULL;
 char board[BOARD_SIZE][BOARD_SIZE];
 char player, opponent; //opponent state is agent
 
-
-
 /***** MAIN *****
 *****************/
 int main(int argc, char *argv[])
@@ -33,21 +31,20 @@ int main(int argc, char *argv[])
   }
   
   /* prompt user to pick player color and set up opponent color */
-  printf("Choose a color: (B)  (W)\n:");
+  printf("Choose a color (B or W): ");
   scanf(" %c",&player); //space to ignore whitepsace or newline in stdin
-  //while ((char ch = getchar()) != '\n' && ch != EOF); //flush input buffer
   player = toupper(player);
   while(player != 'B' && player != 'W'){
     printf("Choose a color: (B)  (W)\n:");
     scanf(" %c",&player); //space to ignore whitepsace or newline in stdin
-    //while ((char ch = getchar()) != '\n' && ch != EOF); //flush input buffer
     player = toupper(player);
   }
+  
   if(player == 'B')
     opponent = 'W';
   else
     opponent = 'B';
-
+  
   //*** flush input buffer stdin
   char ch;
   while ((ch = getchar()) != '\n' && ch != EOF);
@@ -90,7 +87,7 @@ int main(int argc, char *argv[])
     /*** call agent decision function to make a move ***/
     //NOTE: switched player and opponent in function parameters
     //as in the agents eyes the user is the opponent
-    MAKE_DECISION(opponent,player,tree_head->state);
+    MAKE_DECISION(opponent,player,0,tree_head->state);
 
     //print agents move
     printf(" ----- AGENTS MOVE -----\n");

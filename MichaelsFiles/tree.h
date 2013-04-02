@@ -26,6 +26,8 @@ extern char board[BOARD_SIZE][BOARD_SIZE];
 extern char player;
 extern char opponent;
 
+/*global variable for the search depth of the MIN-MAX implementation */
+extern int search_depth;
 
 /* function to initialize the board by reading in values from a file */
 void _setupboard(char *filename);
@@ -50,11 +52,10 @@ void determine_children(char friendly, char enemy, TNode *parent);
 
 /*** in max implementation recurses a tree, propagating values up the tree, to get
      the next move with the best utility value ***/
-void MIN_MAX(char MAX, char MIN, TNode *node);
+void MIN_MAX(char MAX, char MIN, int depth, TNode *node);
 
 /*** function applies a move calculated from MAX_VALUE ***/
-void MAKE_DECISION(char player, char opponent, char current_state[][BOARD_SIZE]);
-
+void MAKE_DECISION(char player, char opponent, int depth, char current_state[][BOARD_SIZE]);
 
 //function for testing
 void Build_Tree(int level, char cur_state[][BOARD_SIZE]);
