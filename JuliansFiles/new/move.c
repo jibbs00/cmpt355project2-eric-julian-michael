@@ -215,15 +215,17 @@ int compare_move( const struct Move * a, const struct Move * b )
 void print_move( const struct Move * move )
 {
    
+    /*
     printf( "(%d,%d),(%d,%d)", 
                 move->start_row,
                 move->start_col,
                 move->end_row,
                 move->end_col );
+    */
     
     char * human_readable = translate_move( move );
 
-    printf( " : %s", human_readable );
+    printf( "%s", human_readable );
 
     Free( human_readable, sizeof( char ) * 11 );
 }

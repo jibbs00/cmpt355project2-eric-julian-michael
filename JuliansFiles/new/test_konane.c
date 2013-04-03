@@ -121,11 +121,12 @@ int main( void )
     }
 
     /* list moves on board 2 */
-    printf( "Board 2: %c\n", player1 );
+    printf( "\n\nBoard 2: %c\n", player1 );
     struct State * test_state = new_state( board2, player1 );
     moves = actions( test_state );
 
     print_state( test_state );
+
     printf( "List of valid moves:\n" );
     while( current != NULL )
     {

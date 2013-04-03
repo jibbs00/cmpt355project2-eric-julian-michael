@@ -34,20 +34,32 @@ static struct List * actions_right( const struct State * state, int row )
     int idx = 0;
     struct List * actions = new_list();
 
+    /*
+    for( int i = 0; i < SIZE; i++ )
+        printf( "%c ", state->board[ row ][i] );
+    printf( "\n" );
+    */
+
     for( idx = 0; idx < SIZE; idx++ )
     {
         /* find next piece on board */
-        for( ; state->board[ row ][ idx ] != state->player && 
-             idx < SIZE - 1; ++idx );
+        for( ; state->board[ row ][ idx ] != state->player && idx < SIZE - 1; ++idx );
+
+        if( !(idx < SIZE - 1 ) )
+            continue;
+
+        //printf( "piece on board @ (%d,%d)\n", row, idx );
 
         /* check for moves */
         for( int i = 1; i + idx < SIZE; i++ )
         {
-            if( state->board[ row ][ idx + i ] != state->player &&
-                state->board[ row ][ idx + i ] != 'O' )
+            if( state->board[ row ][ idx + i ] == opposite_player( state->player ) )
             {
-                if( state->board[ row ][ idx + i + 1 ] == 'O' )
+                //printf( "opposite player (%c)\n", state->board[ row][idx+i] );
+                if( state->board[ row ][ idx + i + 1 ] == 'O' ||
+                    state->board[ row ][ idx + i + 1 ] == '0' )
                 {
+                    //printf( "has move (%c) \n", state->board[ row ][ idx + i + 1] );
                     /* has move */
                     //printf( "(%d,%d), (%d, %d)\n", row, idx, row, idx + i + 1 );
                     add_front( &actions, new_move( row, idx, row, idx + i + 1 ) );
@@ -83,10 +95,10 @@ static struct List * actions_left( const struct State * state, int row )
         /* check for moves */
         for( int i = idx - 1; i >= 0; i-- )
         {
-            if( state->board[ row ][ i ] != state->player &&
-                state->board[ row ][ i ] != 'O' )
+            if( state->board[ row ][ i ] == opposite_player( state->player ) )
             {
-                if( state->board[ row ][ i - 1 ] == 'O' )
+                if( state->board[ row ][ i - 1 ] == 'O' ||
+                    state->board[ row ][ i - 1 ] == '0' )
                 {
                     /* has move */
                     //printf( "(%d,%d), (%d, %d)\n", row, idx, row, i - 1 );
@@ -124,10 +136,10 @@ static struct List * actions_down( const struct State * state, int col )
         /* check for moves */
         for( int i = 1; i + idx < SIZE; i++ )
         {
-            if( state->board[ idx + i ][ col ] != state->player &&
-                state->board[ idx + i ][ col ] != 'O' )
+            if( state->board[ idx + i ][ col ] == opposite_player( state->player ) )
             {
-                if( state->board[ idx + i + 1 ][ col ] == 'O' )
+                if( state->board[ idx + i + 1 ][ col ] == 'O' ||
+                    state->board[ idx + i + 1 ][ col ] == '0' )
                 {
                     /* has move */
                     //printf( "(%d,%d), (%d, %d)\n", row, idx, row, idx + i + 1 );
@@ -165,10 +177,10 @@ static struct List * actions_up( const struct State * state, int col )
         /* check for moves */
         for( int i = 1; idx - i >= 0; i++ )
         {
-            if( state->board[ idx - i ][ col ] != state->player &&
-                state->board[ idx - i ][ col ] != 'O' )
+            if( state->board[ idx - i ][ col ] == opposite_player( state->player ) )
             {
-                if( state->board[ idx - (i+1) ][ col ] == 'O' )
+                if( state->board[ idx - (i+1) ][ col ] == 'O' ||
+                    state->board[ idx - (i+1) ][ col ] == '0' )
                 {
                     /* has move */
                     add_front( &actions, new_move( idx, col, idx - (i+1), col ) );
@@ -285,7 +297,7 @@ struct State * result( const struct State * state, const struct Move * action )
                     new_board[ action->start_row ][ i ] = 'O';
             else
                 for( int i = action->start_col; i > action->end_col; i-- )
-                    new_board[ action->start_row ][ i ] = '0';
+                    new_board[ action->start_row ][ i ] = 'O';
         }
         else
         {
@@ -295,7 +307,7 @@ struct State * result( const struct State * state, const struct Move * action )
                     new_board[ i ][ action->start_col ] = 'O';
             else
                 for( int i = action->start_row; i > action->end_row; i-- )
-                    new_board[ i ][ action->start_col ] = '0';
+                    new_board[ i ][ action->start_col ] = 'O';
         }
 
         /* set current piece */
