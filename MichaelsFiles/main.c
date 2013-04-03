@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     /*** call agent decision function to make a move ***/
     //NOTE: switched player and opponent in function parameters
     //as in the agents eyes the user is the opponent
-    MAKE_DECISION(opponent,player,0,tree_head->state);
+    MAKE_DECISION(opponent,player,1,tree_head->state);
 
     //print agents move
     printf(" ----- AGENTS MOVE -----\n");

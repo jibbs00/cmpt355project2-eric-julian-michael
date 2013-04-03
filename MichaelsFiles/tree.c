@@ -12,7 +12,9 @@ extern char board[BOARD_SIZE][BOARD_SIZE];
 extern char player;
 extern char opponent;
 
-int search_depth = 2;
+/*** global variable for designated tree depth that is serached and propagated 
+     in the MIN_MAX function ***/
+int search_depth = 5;
 
 //function reads board in from files and initializes board[][]
 void _setupboard(char *filename)
@@ -292,7 +294,7 @@ void determine_children(char friendly, char enemy, TNode *parent)
       }
     }
     /* check if board has been modified, if so create node */
-    if(compare_nodes(new_node,parent)){
+    if(compare_nodes(new_node,parent) == 1){
       /* create child node */
       create_node(parent,new_node->state);
       /* reset new_node to parent  */
@@ -303,7 +305,7 @@ void determine_children(char friendly, char enemy, TNode *parent)
     /* ----- BACKWARDS ----- */
       /* check if adjacent friendly spot is open,
 	 if so move piece */
-    for(col = BOARD_SIZE - 1; (col > 0) && ((col - 2) >= 0) ; col--){
+    for(col = BOARD_SIZE - 1; (col > 0) && ((col - 2) >= 0); col--){
 	/*change state */
       if( (parent->state[row][col] == friendly)
 	 && (parent->state[row][col - 1] == enemy) 
@@ -314,7 +316,7 @@ void determine_children(char friendly, char enemy, TNode *parent)
       }
     }
     /* check if board has been modified, if so create node */
-    if(compare_nodes(new_node,parent)){
+    if(compare_nodes(new_node,parent) == 1){
       /* create child node */
       create_node(parent,new_node->state);
       /* reset new_node to parent  */
@@ -342,7 +344,7 @@ void determine_children(char friendly, char enemy, TNode *parent)
       }
     }
     /* check if board has been modified, if so create node */
-    if(compare_nodes(new_node,parent)){
+    if(compare_nodes(new_node,parent) == 1){
       /* create child node */
       create_node(parent,new_node->state);
       /* reset new_node to parent  */
@@ -363,7 +365,7 @@ void determine_children(char friendly, char enemy, TNode *parent)
       }
     }
     /* check if board has bveen modified, if so create node */
-    if(compare_nodes(new_node,parent)){
+    if(compare_nodes(new_node,parent) == 1){
       /* create child node */
       create_node(parent,new_node->state);
       /* reset new_node to parent  */
@@ -507,6 +509,8 @@ void MIN_MAX(char MAX, char MIN, int depth, TNode *node)
   if(child == NULL || depth == search_depth){
     //get utility value for current child node (HEURISTIC: your moves left - opponents moves left)
     parent_utility = evaluation(MIN,MAX,node->state) - evaluation(MAX,MIN,node->state);
+    /*** decrement thr depth to the previous level in the tree ***/
+    depth--;
   }
   else{
     while(child != NULL){
@@ -516,19 +520,28 @@ void MIN_MAX(char MAX, char MIN, int depth, TNode *node)
       //get utility value for current child node (HEURISTIC: your moves left - opponents moves left)
       child->utility_val = evaluation(MIN,MAX,child->state) - evaluation(MAX,MIN,child->state);
       
-      //reset utility of parent based on higher child values      
-      if(child->utility_val > parent_utility){
-	parent_utility = child->utility_val;
+      /*** determine where a MIN or MAX node level for the tree
+	   (If Max, wont be depth not divisible by 2) ***/
+      if((depth % 2) == 0){
+	//MIN NODE: reset utility of parent based on lower child values
+	if(child->utility_val < parent_utility){
+	  parent_utility = child->utility_val;
+	}
       }
-
-      depth--;
+      else{
+	//MAX NODE: reset utility of parent based on higher child values      
+	if(child->utility_val > parent_utility){
+	  parent_utility = child->utility_val;
+	}
+      }
+      
       child = child->next;
     }
   }
 
   //set utility value of parent before return
   node->utility_val = parent_utility;
-
+  printf("parent util: %d\n",node->utility_val);
   return;
   
 }
@@ -622,7 +635,9 @@ void Build_Tree(int level, char cur_state[][BOARD_SIZE])
   
   //determine_children(agent,player,tree_head);
 
-  MIN_MAX(agent,player,0,tree_head);
+  MIN_MAX(agent,player,1,tree_head);
+
+  //MAKE_DECISION(agent,player,1,tree_head->state);
 
   traverse_tree(tree_head,print_node,NULL,NULL);
   delete_tree(tree_head);
