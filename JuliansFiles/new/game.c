@@ -197,9 +197,9 @@ int computer_vs_computer( void )
     /* second move */
     printf( "\n" );
     print_state( current_state->state );
-        temp_state = computer_player_second( current_state );
-        current_state = new_game_node( temp_state->state, NULL );
-        delete_game_node( temp_state ); 
+    temp_state = computer_player_second( current_state );
+    current_state = new_game_node( temp_state->state, NULL );
+    delete_game_node( temp_state ); 
 
     /* regular game */
     for( ;; )
@@ -207,9 +207,11 @@ int computer_vs_computer( void )
         printf( "\n" );
         print_state( current_state->state );
 
+        printf( ">> Mem usage before: %ld\n", memory_usage() );
         temp_state = computer_player( current_state );
         current_state = new_game_node( temp_state->state, NULL );
         delete_game_node( temp_state ); 
+        printf( ">> Mem usage after: %ld\n", memory_usage() );
 
         if( terminal_test( current_state->state ) == 1 )
         {
@@ -217,6 +219,7 @@ int computer_vs_computer( void )
             print_state( current_state->state );
             printf( "\nNo moves left!... \n" );
             printf( "\n%c wins!!!\n", opposite_player( current_state->state->player ) );
+            delete_game_node( current_state );
             break;
         }
     }

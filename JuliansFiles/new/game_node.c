@@ -50,19 +50,25 @@ void delete_game_node( struct GameNode * root )
         return;
     
     /* for each child */
-    struct ListNode * current = root->children->head;
-    struct ListNode * temp;
-    while( current != NULL )
+    if( root->children != NULL )
     {
-        delete_game_node( current->data );
+        struct ListNode * current = root->children->head;
+        struct ListNode * temp;
+        while( current != NULL )
+        {
+            struct GameNode * temp_node = current->data;
+            Free( temp_node->state, sizeof( struct State ) );
+            Free( temp_node->best_move, sizeof( struct Move ) );
 
-        temp = current;
-        current = current->next;
+            delete_game_node( current->data );
 
-        Free( temp, sizeof( struct ListNode ) );
+            temp = current;
+            current = current->next;
 
+            Free( temp, sizeof( struct ListNode ) );
+        }
+        delete_list( &root->children );
     }
-    delete_list( &root->children );
     
     Free( root, sizeof( struct GameNode ) );
 }

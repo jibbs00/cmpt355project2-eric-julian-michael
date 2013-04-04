@@ -16,7 +16,7 @@
 #include "list.h"
 #include "game_node.h"
 
-#define MAX_DEPTH 20
+#define MAX_DEPTH 3
 #define THINKING_TIME 10
 
 extern time_t timer;
