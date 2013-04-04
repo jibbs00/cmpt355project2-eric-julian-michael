@@ -105,11 +105,7 @@ int main( void )
         while( current2 != NULL )
         {
             print_move( current2->data );
-
-            human_move = translate_move( current2->data );
-            printf( "%s\n", human_move );
-            free( human_move );
-
+            printf( "\n" );
             current2 = current2->next;
         }
 
@@ -128,14 +124,11 @@ int main( void )
     print_state( test_state );
 
     printf( "List of valid moves:\n" );
+    current = moves->head;
     while( current != NULL )
     {
         print_move( current->data );
-
-        human_move = translate_move( current->data );
-        printf( "%s\n", human_move );
-        free( human_move );
-
+        printf( "\n" );
         current = current->next;
     }
 
@@ -146,14 +139,11 @@ int main( void )
     print_state( test_state );
     moves = actions( test_state );
     printf( "List of valid moves:\n" );
+    current = moves->head;
     while( current != NULL )
     {
         print_move( current->data );
-
-        human_move = translate_move( current->data );
-        printf( "%s\n", human_move );
-        free( human_move );
-
+        printf( "\n" );
         current = current->next;
     }
 

@@ -22,6 +22,33 @@ int main( int argc, char * argv[] )
 
 int game( void )
 {
+
+    /* human or computer player */
+    printf( "Play konane:\n" );
+    printf( " a) play computer\n" );
+    printf( " b) computer vs computer\n" );
+    char option[ INPUT_SIZE ];
+    do
+    {
+        printf( "Please choose an option: " );
+        fgets( option, INPUT_SIZE, stdin );
+    }
+    while( option[ 0 ] != 'a' && option[ 0 ] != 'b' );
+
+    if( option[0] == 'a' )
+    {
+        human_vs_computer();
+    }
+    else
+    {
+        computer_vs_computer();
+    }
+
+    return 1;
+}
+
+int human_vs_computer( void )
+{
     char input[ INPUT_SIZE ];
     char board[ SIZE ][ SIZE ];
     char player;
@@ -49,121 +76,157 @@ int game( void )
             _player = 0;
     }
 
-    /* human or computer player */
-    printf( "Play konane:\n" );
-    printf( " a) play computer\n" );
-    printf( " b) computer vs computer\n" );
-    char option[ INPUT_SIZE ];
-    do
+    /* choose player */
+    do 
     {
-        printf( "Please choose an option: " );
-        fgets( option, INPUT_SIZE, stdin );
+        printf( "Please choose a player ('B' or 'W' ): " );
+        fgets( input, INPUT_SIZE, stdin );
     }
-    while( option[ 0 ] != 'a' && option[ 0 ] != 'b' );
+    while( input[ 0 ] != 'W' && input[ 0 ] != 'B' );
+    player = input[0];
 
-    if( option[0] == 'a' )
+    /* create a new state */
+    struct State * state = new_state( board, 'B' );
+
+    /* create a new game node */
+    struct GameNode * root = new_game_node( state, NULL );
+
+    print_state( root->state );
+
+    /* START GAME */
+
+    /* start game ( B first ) */
+    struct GameNode * current_state;
+    struct GameNode * temp_state;
+    if( player == 'B' )
     {
-        
-        /* choose player */
-        do 
-        {
-            printf( "Please choose a player ('B' or 'W' ): " );
-            fgets( input, INPUT_SIZE, stdin );
-        }
-        while( input[ 0 ] != 'W' && input[ 0 ] != 'B' );
-        player = input[0];
-
-        /* create a new state */
-        struct State * state = new_state( board, 'B' );
-
-        /* create a new game node */
-        struct GameNode * root = new_game_node( state, NULL );
-
-        print_state( root->state );
-
-        /* START GAME */
-
-        /* start game ( B first ) */
-        struct GameNode * current_state;
-        if( player == 'B' )
-            current_state = human_player_first( root );
-        else
-            current_state = computer_player_first( root );
-
-        /* second move */
-        printf( "\n" );
-        print_state( current_state->state );
-        if( player == 'W' )
-            current_state = human_player_second( current_state );
-        else
-            current_state = computer_player_second( current_state );
-
-        /* regular game */
-        for( ;; )
-        {
-            printf( "\n" );
-            print_state( current_state->state );
-
-            if( current_state->state->player == player )
-                current_state = human_player( current_state );
-            else
-                current_state = computer_player( current_state );
-
-            if( terminal_test( current_state->state ) == 1 )
-            {
-                printf( "%c wins!!!\n", opposite_player( current_state->state->player ) );
-                break;
-            }
-        }
+        temp_state = human_player_first( root );
+        current_state = new_game_node( temp_state->state, NULL );
+        delete_game_node( temp_state ); 
     }
     else
     {
-        /* create a new state */
-        struct State * state = new_state( board, 'B' );
+        temp_state = computer_player_first( root );
+        current_state = new_game_node( temp_state->state, NULL );
+        delete_game_node( temp_state ); 
+    }
 
-        /* create a new game node */
-        struct GameNode * root = new_game_node( state, NULL );
+    /* second move */
+    printf( "\n" );
+    print_state( current_state->state );
+    if( player == 'W' )
+    {
+        current_state = human_player_second( current_state );
+        current_state = new_game_node( temp_state->state, NULL );
+        delete_game_node( temp_state ); 
+    }
+    else
+    {
+        current_state = computer_player_second( current_state );
+        current_state = new_game_node( temp_state->state, NULL );
+        delete_game_node( temp_state ); 
+    }
 
-        print_state( root->state );
-
-        /* START GAME */
-
-        /* start game ( B first ) */
-        struct GameNode * current_state;
-        if( player == 'B' )
-            current_state = computer_player_first( root );
-        else
-            current_state = computer_player_first( root );
-
-        /* second move */
+    /* regular game */
+    for( ;; )
+    {
         printf( "\n" );
         print_state( current_state->state );
-        if( player == 'W' )
-            current_state = computer_player_second( current_state );
-        else
-            current_state = computer_player_second( current_state );
 
-        /* regular game */
-        for( ;; )
+        if( current_state->state->player == player )
+        {
+            temp_state = human_player( current_state );
+            current_state = new_game_node( temp_state->state, NULL );
+            delete_game_node( temp_state ); 
+        }
+        else
+        {
+            temp_state = computer_player( current_state );
+            current_state = new_game_node( temp_state->state, NULL );
+            delete_game_node( temp_state ); 
+        }
+
+        if( terminal_test( current_state->state ) == 1 )
+        {
+            printf( "%c wins!!!\n", opposite_player( current_state->state->player ) );
+            break;
+        }
+    }
+
+    return 1;
+}
+
+int computer_vs_computer( void )
+{
+    char board[ SIZE ][ SIZE ];
+
+    /* set up board */
+    int _player = 0;
+    for( int i = 0; i < 8 ; i++ )
+    {
+        for( int j = 0; j < 8; j++ )
+        {
+            if( _player == 0 )
+            {
+                board[i][j] = 'B';
+                _player = 1;
+            }
+            else
+            {
+                board[i][j] = 'W';
+                _player = 0;
+            }
+        }
+        if( _player == 0 )
+            _player = 1;
+        else
+            _player = 0;
+    }
+    /* create a new state */
+    struct State * state = new_state( board, 'B' );
+
+    /* create a new game node */
+    struct GameNode * root = new_game_node( state, NULL );
+
+    print_state( root->state );
+
+    /* START GAME */
+
+    /* start game ( B first ) */
+    struct GameNode * current_state;
+    struct GameNode * temp_state;
+
+    temp_state = computer_player_first( root );
+    current_state = new_game_node( temp_state->state, NULL );
+    delete_game_node( temp_state ); 
+
+    /* second move */
+    printf( "\n" );
+    print_state( current_state->state );
+        temp_state = computer_player_second( current_state );
+        current_state = new_game_node( temp_state->state, NULL );
+        delete_game_node( temp_state ); 
+
+    /* regular game */
+    for( ;; )
+    {
+        printf( "\n" );
+        print_state( current_state->state );
+
+        temp_state = computer_player( current_state );
+        current_state = new_game_node( temp_state->state, NULL );
+        delete_game_node( temp_state ); 
+
+        if( terminal_test( current_state->state ) == 1 )
         {
             printf( "\n" );
             print_state( current_state->state );
-
-            if( current_state->state->player == player )
-                current_state = computer_player( current_state );
-            else
-                current_state = computer_player( current_state );
-
-            if( terminal_test( current_state->state ) == 1 )
-            {
-                printf( "\n" );
-                print_state( current_state->state );
-                printf( "\nNo moves left!... \n" );
-                printf( "\n%c wins!!!\n", opposite_player( current_state->state->player ) );
-                break;
-            }
+            printf( "\nNo moves left!... \n" );
+            printf( "\n%c wins!!!\n", opposite_player( current_state->state->player ) );
+            break;
         }
     }
+    return 1;
 }
 
 struct GameNode * human_player_first( struct GameNode * game_state )
@@ -501,6 +564,7 @@ struct GameNode * human_player( struct GameNode * game_state )
         move = translate_in_move( input );
 
         if( move != NULL )
+        {
             if( validate_action( game_state->state, move ) == 1 )
                 break;
             else
@@ -508,6 +572,7 @@ struct GameNode * human_player( struct GameNode * game_state )
                 Free( move, sizeof( struct Move ) );
                 move = NULL;
             }
+        }
     }
     while( move == NULL );
 

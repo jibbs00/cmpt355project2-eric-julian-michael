@@ -56,7 +56,7 @@ void delete_list( struct List ** list )
  */
 void add_front( struct List ** list, void * data )
 {
-    struct ListNode * node = Calloc( 1, sizeof( struct List * ) );
+    struct ListNode * node = Calloc( 1, sizeof( struct ListNode ) );
     assert( node );
 
     node->data = data;

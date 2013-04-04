@@ -33,43 +33,29 @@ static struct List * actions_right( const struct State * state, int row )
 {
     int idx = 0;
     struct List * actions = new_list();
-
-    /*
-    for( int i = 0; i < SIZE; i++ )
-        printf( "%c ", state->board[ row ][i] );
-    printf( "\n" );
-    */
-
-    for( idx = 0; idx < SIZE; idx++ )
+    
+    while( idx < SIZE - 1 )
     {
-        /* find next piece on board */
-        for( ; state->board[ row ][ idx ] != state->player && idx < SIZE - 1; ++idx );
+        /* find next piece */
+        for( ; ( state->board[ row ][ idx ] != state->player ) &&
+               ( idx < SIZE - 1 ); idx++ );
 
-        if( !(idx < SIZE - 1 ) )
-            continue;
-
-        //printf( "piece on board @ (%d,%d)\n", row, idx );
-
-        /* check for moves */
-        for( int i = 1; i + idx < SIZE; i++ )
+        /* check if overbounds */
+        if( idx < SIZE - 1 )
         {
-            if( state->board[ row ][ idx + i ] == opposite_player( state->player ) )
-            {
-                //printf( "opposite player (%c)\n", state->board[ row][idx+i] );
-                if( state->board[ row ][ idx + i + 1 ] == 'O' ||
-                    state->board[ row ][ idx + i + 1 ] == '0' )
-                {
-                    //printf( "has move (%c) \n", state->board[ row ][ idx + i + 1] );
-                    /* has move */
-                    //printf( "(%d,%d), (%d, %d)\n", row, idx, row, idx + i + 1 );
-                    add_front( &actions, new_move( row, idx, row, idx + i + 1 ) );
-
-                    /* check for more moves */
-                    continue;
-                }
-                break;
-            }
+            /* find all moves */
+            for( int i = idx; i + 2 < SIZE; i++ )
+                if( state->board[ row ][ i + 1 ] == opposite_player( state->player ) )
+                    if( state->board[ row ][ i + 2 ] == 'O' )
+                    {
+                        add_front( &actions, new_move( row, idx, row, i + 2 ) );
+                    }
+                    else
+                    {
+                        break;
+                    }
         }
+        idx++;
     }
 
     return actions;
@@ -91,6 +77,9 @@ static struct List * actions_left( const struct State * state, int row )
     {
         /* find next piece on board */
         for( ; state->board[ row ][ idx ] != state->player && idx > 0; idx-- );
+
+        if( idx < 0 )
+            continue;
         
         /* check for moves */
         for( int i = idx - 1; i >= 0; i-- )
@@ -133,6 +122,9 @@ static struct List * actions_down( const struct State * state, int col )
         for( ; state->board[ idx ][ col ] != state->player && 
              idx < SIZE - 1; ++idx );
 
+        if( idx > SIZE - 1 )
+            continue;
+
         /* check for moves */
         for( int i = 1; i + idx < SIZE; i++ )
         {
@@ -173,6 +165,9 @@ static struct List * actions_up( const struct State * state, int col )
         /* find next piece on board */
         for( ; state->board[ idx ][ col ] != state->player && 
              idx > 0; --idx );
+
+        if( idx < 0 )
+            continue;
 
         /* check for moves */
         for( int i = 1; idx - i >= 0; i++ )
@@ -438,7 +433,7 @@ static int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
  //goes through the board horizontally
  while(count<size){
      while(counter<size){
-       if(counter+2<=size){
+       if(counter+2<size){
 	 if((ecolor==board[count][counter])
 	    && (fcolor==board[count][counter+1])
 	    && (board[count][counter+2]=='O'))
@@ -466,7 +461,7 @@ static int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
  //goes through the board vertically
  while(counter<size){
    while(count<size){
-     if(count+2<=size){
+     if(count+2<size){
        if((ecolor==board[count][counter])
 	  && (fcolor==board[count+1][counter])
 	  && (board[count+2][counter]=='O'))
@@ -496,7 +491,8 @@ static int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
 
 int eval( struct State * state )
 {
-    return evaluation( state->player, opposite_player( state->player ), state->board );
+    return evaluation( opposite_player( state->player), state->player, state->board ) - 
+           evaluation( state->player, opposite_player( state->player ), state->board );
 }
 
 /**
@@ -646,7 +642,7 @@ static int max_value( struct GameNode * game_state, int depth, int alpha, int be
 static int min_value( struct GameNode * game_state, int depth, int alpha, int beta )
 {
     if( cutoff_test( game_state->state, depth ) )
-        return -eval( game_state->state );
+        return eval( game_state->state );
 
     ++depth;
     int v = INT_MAX;
