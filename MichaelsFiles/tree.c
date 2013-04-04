@@ -14,7 +14,7 @@ extern char opponent;
 
 /*** global variable for designated tree depth that is serached and propagated 
      in the MIN_MAX function ***/
-int search_depth = 5;
+int search_depth = 4;
 
 //function reads board in from files and initializes board[][]
 void _setupboard(char *filename)
@@ -496,7 +496,7 @@ void MIN_MAX(char MAX, char MIN, int depth, TNode *node)
 
   //create the children for the current state passed
   determine_children(MAX,MIN,node);
-  printf("determining children!!!\n");
+  //printf("determining children!!!\n");
 
   //increment the depth for the next child iteration
   depth++;
@@ -573,7 +573,7 @@ void MAKE_DECISION(char player, char opponent, int depth, char current_state[][B
       child_count++;
     }
     printf("child util %d\n",child->utility_val);
-    print_node(child);
+    //print_node(child);
     child = child->next;
   }
 

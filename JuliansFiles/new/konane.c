@@ -34,16 +34,16 @@ static struct List * actions_right( const struct State * state, int row )
     int idx = 0;
     struct List * actions = new_list();
     
-    while( idx < SIZE - 1 )
+    /*while( idx < SIZE - 1 )
     {
-        /* find next piece */
+      // find next piece
         for( ; ( state->board[ row ][ idx ] != state->player ) &&
                ( idx < SIZE - 1 ); idx++ );
 
-        /* check if overbounds */
+        //check if overbounds
         if( idx < SIZE - 1 )
         {
-            /* find all moves */
+	  //find all moves
             for( int i = idx; i + 2 < SIZE; i++ )
                 if( state->board[ row ][ i + 1 ] == opposite_player( state->player ) )
                     if( state->board[ row ][ i + 2 ] == 'O' )
@@ -56,8 +56,24 @@ static struct List * actions_right( const struct State * state, int row )
                     }
         }
         idx++;
+	}*/
+    for(idx = 0; (idx < SIZE) && ((idx + 2) < SIZE); idx++){
+      if( (state->board[ row ][idx] == state->player )
+	    && (state->board[ row ][ idx + 1 ] == opposite_player( state->player ))
+	    && (state->board[ row ][ idx + 2 ] == 'O')){
+	   /* check for moves  - increment to optimize move*/
+	   int end_col = idx + 2;
+	   while( ((end_col + 2) < SIZE )
+	        && (state->board[ row ][ end_col ] == 'O' )
+	        && (state->board[ row ][ end_col + 1 ] == opposite_player( state->player ))
+	        && (state->board[ row ][ end_col + 2 ] == 'O') ){
+	     end_col += 2;
+	   }
+	   /* add move to action list */
+	   add_front( &actions, new_move( row, idx, row, end_col) );
+      }
     }
-
+    
     return actions;
 }
 
@@ -73,15 +89,15 @@ static struct List * actions_left( const struct State * state, int row )
     int idx = SIZE-1;
     struct List * actions = new_list();
 
-    for( idx = SIZE - 1; idx >= 0; idx-- )
+    /*for( idx = SIZE - 1; idx >= 0; idx-- )
     {
-        /* find next piece on board */
+      // find next piece on board
         for( ; state->board[ row ][ idx ] != state->player && idx > 0; idx-- );
 
         if( idx < 0 )
             continue;
         
-        /* check for moves */
+        // check for moves
         for( int i = idx - 1; i >= 0; i-- )
         {
             if( state->board[ row ][ i ] == opposite_player( state->player ) )
@@ -89,17 +105,34 @@ static struct List * actions_left( const struct State * state, int row )
                 if( state->board[ row ][ i - 1 ] == 'O' ||
                     state->board[ row ][ i - 1 ] == '0' )
                 {
-                    /* has move */
+                   
                     //printf( "(%d,%d), (%d, %d)\n", row, idx, row, i - 1 );
                     add_front( &actions, new_move( row, idx, row, i - 1 ) );
 
-                    /* check for more moves */
+                    // check for more moves
                     continue;
                 }
                 break;
             }
         }
-    }
+	}*/
+
+     for(idx = SIZE - 1; (idx > 0) && ((idx - 2) >= 0); idx--){
+       if( (state->board[ row ][idx] == state->player )
+	    && (state->board[ row ][ idx - 1 ] == opposite_player( state->player ))
+	    && (state->board[ row ][ idx - 2 ] == 'O')){
+	   /* check for moves  - increment to optimize move*/
+	   int end_col = idx - 2;
+	   while( ((end_col - 2) > 0 )
+	        && (state->board[ row ][ end_col ] == 'O' )
+	        && (state->board[ row ][ end_col - 1 ] == opposite_player( state->player ))
+	        && (state->board[ row ][ end_col - 2 ] == 'O') ){
+	     end_col -= 2;
+	   }
+	   /* add move to action list */
+	   add_front( &actions, new_move( row, idx, row, end_col) );
+       }
+     }
 
     return actions;
 }
@@ -116,16 +149,16 @@ static struct List * actions_down( const struct State * state, int col )
     int idx = 0;
     struct List * actions = new_list();
 
-    for( idx = 0; idx < SIZE; idx++ )
+    /*for( idx = 0; idx < SIZE; idx++ )
     {
-        /* find next piece on board */
+      // find next piece on board
         for( ; state->board[ idx ][ col ] != state->player && 
              idx < SIZE - 1; ++idx );
 
         if( idx > SIZE - 1 )
             continue;
 
-        /* check for moves */
+        // check for moves
         for( int i = 1; i + idx < SIZE; i++ )
         {
             if( state->board[ idx + i ][ col ] == opposite_player( state->player ) )
@@ -133,18 +166,34 @@ static struct List * actions_down( const struct State * state, int col )
                 if( state->board[ idx + i + 1 ][ col ] == 'O' ||
                     state->board[ idx + i + 1 ][ col ] == '0' )
                 {
-                    /* has move */
+		  // has move
                     //printf( "(%d,%d), (%d, %d)\n", row, idx, row, idx + i + 1 );
                     add_front( &actions, new_move( idx, col, idx + i + 1, col  ));
 
-                    /* check for more moves */
+                    // check for more moves
                     continue;
                 }
                 break;
             }
         }
+	}*/
+    for(idx = 0; (idx < SIZE) && ((idx + 2) < SIZE); idx++){
+      if(  (state->board[ idx ][col] == state->player )
+	    && (state->board[ idx + 1 ][ col ] == opposite_player( state->player ))
+	    && (state->board[ idx + 2 ][ col ] == 'O')){
+	   /* check for moves  - increment to optimize move*/
+	   int end_row = idx + 2;
+	   while( ((end_row + 2) < SIZE )
+	        && (state->board[ end_row ][ col ] == 'O' )
+	        && (state->board[ end_row + 1 ][ col ] == opposite_player( state->player ))
+	        && (state->board[ end_row + 2 ][ col ] == 'O') ){
+	     end_row += 2;
+	   }
+	   /* add move to action list */
+	   add_front( &actions, new_move( idx, col, end_row, col) );
+      }
     }
-
+    
     return actions;
 }
 
@@ -157,19 +206,19 @@ static struct List * actions_down( const struct State * state, int col )
  */
 static struct List * actions_up( const struct State * state, int col )
 {
-    int idx = SIZE;
+    int idx = SIZE - 1;
     struct List * actions = new_list();
 
-    for( idx = SIZE; idx >= 0; idx-- )
+    /*for( idx = SIZE; idx >= 0; idx-- )
     {
-        /* find next piece on board */
+      // find next piece on board
         for( ; state->board[ idx ][ col ] != state->player && 
              idx > 0; --idx );
 
         if( idx < 0 )
             continue;
 
-        /* check for moves */
+        // check for moves
         for( int i = 1; idx - i >= 0; i++ )
         {
             if( state->board[ idx - i ][ col ] == opposite_player( state->player ) )
@@ -177,15 +226,32 @@ static struct List * actions_up( const struct State * state, int col )
                 if( state->board[ idx - (i+1) ][ col ] == 'O' ||
                     state->board[ idx - (i+1) ][ col ] == '0' )
                 {
-                    /* has move */
+		  // has move
                     add_front( &actions, new_move( idx, col, idx - (i+1), col ) );
 
-                    /* check for more moves */
+                    // check for more moves 
                     continue;
                 }
                 break;
             }
         }
+	}*/
+
+    for(idx = SIZE - 1; (idx > 0) && ((idx - 2) >= 0); idx--){
+      if(  (state->board[ idx ][col] == state->player )
+	    && (state->board[ idx - 1 ][ col ] == opposite_player( state->player ))
+	    && (state->board[ idx - 2 ][ col ] == 'O')){
+	   /* check for moves  - increment to optimize move*/
+	   int end_row = idx - 2;
+	   while( ((end_row - 2) > 0 )
+	        && (state->board[ end_row ][ col ] == 'O' )
+	        && (state->board[ end_row - 1 ][ col ] == opposite_player( state->player ))
+	        && (state->board[ end_row - 2 ][ col ] == 'O') ){
+	     end_row -= 2;
+	   }
+	   /* add move to action list */
+	   add_front( &actions, new_move( idx, col, end_row, col) );
+      }
     }
 
     return actions;
