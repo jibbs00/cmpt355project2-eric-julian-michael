@@ -1,3 +1,8 @@
+/**
+ * @file utility.h
+ * @author Julian Martinez del Campo
+ * @brief this file provides memory allocation routines, and memory tracking functions
+ */
 #ifndef _UTILITY_H_
 #define _UTILITY_H_
 

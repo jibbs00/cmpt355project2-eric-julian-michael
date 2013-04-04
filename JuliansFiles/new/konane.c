@@ -6,12 +6,21 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <assert.h>
 
 #include "konane.h"
 #include "state.h"
 #include "move.h"
 #include "list.h"
+#include "game_node.h"
+
+#define MAX_DEPTH 3
+
+static int max( int a, int b );
+static int min( int a, int b );
+static int min_value( struct GameNode * game_state, int depth, int alpha, int beta );
+static int max_value( struct GameNode * game_state, int depth, int alpha, int beta );
 
 /**
  * Find possible actions right on a row
@@ -396,7 +405,7 @@ int terminal_test( const struct State * state )
     moves = actions( state );
 
     /* check if state is terminal */
-    int has_move = ( moves->count != 0 );
+    int has_move = ( moves->count == 0 );
     delete_list( &moves );
 
     return has_move;
@@ -404,6 +413,78 @@ int terminal_test( const struct State * state )
 
 int utility( const struct State * state )
 {
+    return 0;
+}
+
+//will evaluate the board and return a number based on the
+//number of moves an enemy has
+static int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
+  int count = 0, counter = 0;
+  int size=BOARD_SIZE;
+  int tc=0;
+   
+ //goes through the board horizontally
+ while(count<size){
+     while(counter<size){
+       if(counter+2<=size){
+	 if((ecolor==board[count][counter])
+	    && (fcolor==board[count][counter+1])
+	    && (board[count][counter+2]=='O'))
+	   { 
+	     tc=tc+1; 
+	   }
+       }
+       if(counter-2>=0){
+	 if((ecolor==board[count][counter])
+	    && (fcolor==board[count][counter-1])
+	    && (board[count][counter-2]=='O')) 
+	   {
+	     tc=tc+1;
+	   }
+       }
+       //printf("count: %d counter: %d\n",count,counter);
+       counter++;
+     }
+     counter=0;
+    count++;
+ }
+
+ count=0;
+ counter=0;
+ //goes through the board vertically
+ while(counter<size){
+   while(count<size){
+     if(count+2<=size){
+       if((ecolor==board[count][counter])
+	  && (fcolor==board[count+1][counter])
+	  && (board[count+2][counter]=='O'))
+	 {
+	   tc=tc+1;
+	 }
+     }
+     if(count-2>=0){
+       if((ecolor==board[count][counter])
+	  && (fcolor==board[count-1][counter])
+	  && (board[count-2][counter]=='O'))
+	 {
+	   tc=tc+1;
+	 }
+     }
+
+     //printf("count: %d counter: %d\n",count,counter);
+     count++;
+   }
+   count=0;
+   counter++;
+ }
+ 
+ return tc;
+}
+
+
+int eval( struct State * state )
+{
+    return evaluation( state->player, opposite_player( state->player ), state->board );
 }
 
 /**
@@ -416,6 +497,204 @@ char opposite_player( char player )
 {
     if( player == 'B' )
         return 'W';
-    else if( player == 'W' )
-        return 'B';
+    return 'B';
 }
+
+int validate_first_in_move( const struct State * state, const struct Move * action )
+{
+    if( ((action->start_row == 3) && (action->start_col == 3)) ||
+        ((action->start_row == 3) && (action->start_col == 4)) ||
+        ((action->start_row == 4) && (action->start_col == 3)) ||
+        ((action->start_row == 4) && (action->start_col == 4)) ||
+        ((action->start_row == 0) && (action->start_col == 0)) ||
+        ((action->start_row == 0) && (action->start_col == 7)) ||
+        ((action->start_row == 7) && (action->start_col == 0)) ||
+        ((action->start_row == 7) && (action->start_col == 7)) ) 
+    {
+        if( state->board[ action->start_row ][ action->start_col ] == 'B' )
+            return 1;
+    }
+
+    return 0;
+}
+
+int validate_second_in_move( const struct State * state, const struct Move * action )
+{
+    int i, j;
+    int row, col;
+
+    /* find empty space on board */
+    for( row = 0; row < SIZE; row++ )
+        for( col = 0; col < SIZE; col++ )
+            if( state->board[ row ][ col ] == 'O' )
+            {
+                i = row;
+                j = col;
+            }
+
+    /* valid moves are on either side of empty space */
+    if( i == 0 && j == 0 )
+    {
+        if( ( state->board[ i ][ j + 1 ] == 'W' ) ||
+            ( state->board[ i + 1][ j ] == 'W' ) )
+            return 1;
+    }
+    else if( i == 0 && j == 7 )
+    {
+        if( (state->board[ i ][ j - 1 ] == 'W' ) ||
+            (state->board[ i + 1 ][ j ] == 'W' ) )
+            return 1;
+    }
+    else if( i == 7 && j == 0 )
+    {
+        if( (state->board[ i ][ j + 1 ] == 'W' ) ||
+            (state->board[ i - 1 ][ j ] == 'W' ) )
+            return 1;
+    }
+    else if( i == 7 && j == 7 )
+    {
+        if( (state->board[ i ][ j - 1 ] == 'W' ) ||
+            (state->board[ i - 1 ][ j ] == 'W' ) )
+            return 1;
+    }
+    else
+    {
+        if( (state->board[ i + 1 ][ j ] == 'W' ) ||
+            (state->board[ i - 1 ][ j ] == 'W' ) ||
+            (state->board[ i ][ j + 1 ] == 'W' ) ||
+            (state->board[ i ][ j - 1 ] == 'W' ) )
+            return 1;
+    }
+
+    return 0;
+}
+
+static int max( int a, int b )
+{
+    return a > b ? a : b;
+}
+
+static int min( int a, int b )
+{
+    return a < b ? a : b;
+}
+
+static int max_value( struct GameNode * game_state, int depth, int alpha, int beta )
+{
+    if( cutoff_test( game_state->state, depth ) )
+    {
+        return eval( game_state->state );
+    }
+
+    ++depth;
+    int v = INT_MIN;
+    int min_val;
+
+    struct List * a = actions( game_state->state ); /* get possible actions */
+    /* iterate over all moves */
+    struct ListNode * current = a->head;
+    while( current != NULL )
+    {
+        /* create new game node */
+        struct State * state = result( game_state->state, current->data );
+        struct GameNode * node = new_game_node( state, game_state );
+
+        add_child_game_node( game_state, node );
+
+        /* find max value */
+        min_val = min_value( node, depth, alpha, beta );
+
+        if( min_val > v )
+        {
+            game_state->best_util_val = v;
+            game_state->best_move = current->data;
+        }
+
+        v = max( v, min_val );
+
+        //game_state->best_util_val = v;
+        
+        /** WARNING!! */
+        //game_state->best_move = current->data;
+    
+        if( v >= beta )
+        {
+            game_state->best_move = current->data;
+            return v;
+        }
+
+        alpha = max( alpha, v );
+        
+        current = current->next;
+    }
+
+    return v;
+}
+
+static int min_value( struct GameNode * game_state, int depth, int alpha, int beta )
+{
+    if( cutoff_test( game_state->state, depth ) )
+        return -eval( game_state->state );
+
+    ++depth;
+    int v = INT_MAX;
+    int max_val;
+
+    struct List * a = actions( game_state->state ); /* get possible actions */
+    /* iterate over all actions */
+    struct ListNode * current = a->head;
+    while( current != NULL )
+    {
+        /* create new game node */
+        struct State * state = result( game_state->state, current->data );
+        struct GameNode * node = new_game_node( state, game_state );
+        add_child_game_node( game_state, node );    /* add child node */
+
+        max_val = max_value( node, depth, alpha, beta );
+        if( max_val < v )
+        {
+            game_state->best_util_val = v;
+            game_state->best_move = current->data;
+        }
+
+        v = min( v, max_val );
+
+        //game_state->best_util_val = v;
+        
+        /** WARNING!! */
+        //game_state->best_move = current->data;
+
+        if( v <= alpha )
+        {
+            game_state->best_move = current->data;
+            return v;
+        }
+
+        beta = min( beta, v );
+
+        current = current->next;
+    }
+
+    return v;
+}
+
+int cutoff_test( const struct State * state, int depth )
+{
+    if( depth > MAX_DEPTH )
+        return 1;
+
+    return terminal_test( state );
+}
+
+struct Move * alpha_beta_search( struct GameNode * game_state )
+{
+    int v = max_value( game_state, 0, INT_MIN, INT_MAX );
+
+    //printf( "Best util val: %d\n", game_state->best_util_val );
+    //printf( "Max val : %d\n", v );
+    //printf( "Best move: " );
+    //print_move( game_state->best_move );
+    
+    return game_state->best_move;
+}
+

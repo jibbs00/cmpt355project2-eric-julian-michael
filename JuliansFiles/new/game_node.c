@@ -4,10 +4,11 @@
 #include "game_node.h"
 #include "state.h"
 #include "list.h"
+#include "utility.h"
 
 struct GameNode * new_game_node( struct State * state, struct GameNode * parent )
 {
-    struct GameNode * node = calloc( 1, sizeof( struct GameNode ) );
+    struct GameNode * node = Calloc( 1, sizeof( struct GameNode ) );
     assert( node );
 
     node->state = state;
@@ -17,7 +18,7 @@ struct GameNode * new_game_node( struct State * state, struct GameNode * parent 
     return node;
 }
 
-void add_children_game_node( struct GameNode * parent, struct GameNode * child )
+void add_child_game_node( struct GameNode * parent, struct GameNode * child )
 {
     child->parent = parent;
     add_front( &parent->children, child );
@@ -30,7 +31,6 @@ void delete_children_game_node( struct GameNode * parent )
 
     if( parent == NULL )
         return;
-
     
     for( current = children->head;
          current != NULL;
@@ -38,4 +38,12 @@ void delete_children_game_node( struct GameNode * parent )
     {
         delete_children_game_node( current->data );
     }
+
+    delete_list( &children );
+    
+    Free( parent, sizeof( struct GameNode ) );
+}
+
+void print_game_node( struct GameNode * node )
+{
 }

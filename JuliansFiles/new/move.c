@@ -81,7 +81,7 @@ char * translate_move( const struct Move * move )
  */
 static int letter2row( char * letter )
 {
-    char l = letter[0];
+    char l = toupper( letter[0] );
     return (int) l - 65;
 }
 
@@ -152,6 +152,46 @@ struct Move * translate_in_move( const char * move )
     return translated_move;
 }
 
+struct Move * translate_first_in_move( const char * move )
+{
+    int length = strnlen( move, 20 );
+    int i;
+    int valid = 0;
+    char start_row[2];
+    char start_col[2];
+
+    /* find first letter */
+    for( i = 0; i < length; i++ )
+        if( isalpha( move[ i ] ) )
+        {
+            start_row[0] = move[ i ];
+            start_row[1] = '\0';
+            valid++;
+            break;
+        }
+
+    /* find next number */
+    for( ; i< length; i++ )
+        if( isdigit( move[i] ) )
+        {
+            start_col[0] = move[ i ];
+            start_col[1] = '\0';
+            valid++;
+            break;
+        }
+
+    /* check input parameters */
+    if( valid != 2 )
+        return NULL;
+
+    struct Move * translated_move = new_move( letter2row( start_row ), 
+            atoi( start_col ) - 1,
+            0 ,
+            0 );
+
+    return translated_move;
+}
+
 /**
  * Compare a move
  *
@@ -174,9 +214,17 @@ int compare_move( const struct Move * a, const struct Move * b )
  */
 void print_move( const struct Move * move )
 {
-    printf( "(%d,%d),(%d,%d)\n", 
+   
+    printf( "(%d,%d),(%d,%d)", 
                 move->start_row,
                 move->start_col,
                 move->end_row,
                 move->end_col );
+    
+    char * human_readable = translate_move( move );
+
+    printf( " : %s", human_readable );
+
+    Free( human_readable, sizeof( char ) * 11 );
 }
+

@@ -12,7 +12,16 @@ int main( void )
     char board[8][8];
     char player1 = 'B';
     char player2 = 'W';
-    
+
+    char board2[8][8] = { { 'B', 'O', 'O', 'W', '0', '0', 'B', 'W' },
+                          { '0', '0', '0', 'B', '0', '0', 'W', 'B' },
+                          { '0', 'O', '0', '0', '0', '0', '0', 'W' },
+                          { '0', 'O', '0', '0', '0', '0', '0', 'B' },
+                          { '0', '0', 'B', 'W', '0', '0', 'B', 'W' },
+                          { 'W', '0', 'W', 'B', 'W', 'B', 'W', 'B' },
+                          { 'B', 'W', 'B', 'W', 'B', 'W', 'B', 'W' },
+                          { 'W', 'B', 'W', 'B', 'W', 'B', 'W', 'B' } };
+
     int player = 0;
     /* populate board */
     for( int i = 0; i < 8 ; i++ )
@@ -110,6 +119,44 @@ int main( void )
 
         current = current->next;
     }
+
+    /* list moves on board 2 */
+    printf( "Board 2: %c\n", player1 );
+    struct State * test_state = new_state( board2, player1 );
+    moves = actions( test_state );
+
+    print_state( test_state );
+    printf( "List of valid moves:\n" );
+    while( current != NULL )
+    {
+        print_move( current->data );
+
+        human_move = translate_move( current->data );
+        printf( "%s\n", human_move );
+        free( human_move );
+
+        current = current->next;
+    }
+
+    free( test_state );
+
+    printf( "Board 2: %c\n", player2 );
+    test_state = new_state( board2, player2 );
+    print_state( test_state );
+    moves = actions( test_state );
+    printf( "List of valid moves:\n" );
+    while( current != NULL )
+    {
+        print_move( current->data );
+
+        human_move = translate_move( current->data );
+        printf( "%s\n", human_move );
+        free( human_move );
+
+        current = current->next;
+    }
+
+    free( test_state );
 
     return EXIT_SUCCESS;
 }

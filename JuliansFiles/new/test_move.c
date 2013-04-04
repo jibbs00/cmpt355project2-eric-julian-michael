@@ -37,6 +37,41 @@ int main( void )
     printf( "same = %d\n", compare_move( move, move ) );
     printf( "different = %d\n", compare_move( move, human_move ) );
 
+
+    char input[ 20 ];
+
+    /* test input move */
+    do{
+        printf( "Please enter a move: " );
+        fgets( input, 20, stdin );
+
+        if( input[0] == 'q' )
+            break;
+    
+        struct Move * m = translate_first_in_move( input );
+
+        printf( "Translated move: " );
+        print_move( m );
+        printf( "\n" );
+        
+    }while( 1 );
+
+    /* test normal move */
+    do{
+        printf( "Please enter a move: " );
+        fgets( input, 20, stdin );
+
+        if( input[0] == 'q' )
+            break;
+    
+        struct Move * m = translate_in_move( input );
+
+        printf( "Translated move: " );
+        print_move( m );
+        printf( "\n" );
+        
+    }while( 1 );
+
     Free( human_readable, sizeof( char ) * 11 );
     Free( move, sizeof( struct Move ) );
 
