@@ -12,13 +12,7 @@
 
 #define INPUT_SIZE  20 
 
-int main( int argc, char * argv[] )
-{
-
-    game();
-
-    return EXIT_SUCCESS;
-}
+time_t timer;
 
 int game( void )
 {
@@ -599,9 +593,15 @@ struct GameNode * computer_player( struct GameNode * game_state )
     struct State * state;
     struct Move * move;
     struct GameNode * new_game_state;
+    time_t stop;
 
     /* computer player */
+    time( &timer );
     move = alpha_beta_search( game_state );
+    time( &stop );
+
+    /* print time */
+    printf( "Time taken: %d\n", stop - timer );
 
     /* print move */
     printf( "Move chosen: " );

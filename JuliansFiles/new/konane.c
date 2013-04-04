@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <time.h>
 #include <assert.h>
 
 #include "konane.h"
@@ -15,7 +16,10 @@
 #include "list.h"
 #include "game_node.h"
 
-#define MAX_DEPTH 3
+#define MAX_DEPTH 20
+#define THINKING_TIME 10
+
+extern time_t timer;
 
 static int max( int a, int b );
 static int min( int a, int b );
@@ -655,6 +659,13 @@ static int min( int a, int b )
 
 static int max_value( struct GameNode * game_state, int depth, int alpha, int beta )
 {
+    time_t current_time;
+    time( &current_time );
+
+    if( (current_time - timer) > THINKING_TIME - 1 )
+    {
+        return eval( game_state->state );
+    }
     if( cutoff_test( game_state->state, depth ) )
     {
         return eval( game_state->state );
@@ -707,6 +718,14 @@ static int max_value( struct GameNode * game_state, int depth, int alpha, int be
 
 static int min_value( struct GameNode * game_state, int depth, int alpha, int beta )
 {
+    time_t current_time;
+    time( &current_time );
+
+    if( (current_time - timer) > THINKING_TIME - 1 )
+    {
+        return eval( game_state->state );
+    }
+
     if( cutoff_test( game_state->state, depth ) )
         return eval( game_state->state );
 
