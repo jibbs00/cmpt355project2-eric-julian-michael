@@ -75,7 +75,7 @@ void Build_Tree(int level, char cur_state[][BOARD_SIZE]);
 
 struct GameNode * new_game_node( struct State * state, struct GameNode * parent );
 void add_child_game_node( struct GameNode * parent, struct GameNode * child );
-void delete_game_node( struct GameNode * root );
+void delete_game_node( struct GameNode ** root );
 void delete_children_game_node( struct GameNode * parent );
 
 #endif /* _GAME_NODE_ */

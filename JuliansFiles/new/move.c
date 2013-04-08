@@ -65,10 +65,10 @@ char * translate_move( const struct Move * move )
     assert( human_readable );
     
     snprintf( human_readable, 11, "%c%d - %c%d",
-                row2letter( move->start_row ),
-                move->start_col + 1,
-                row2letter( move->end_row ),
-                move->end_col + 1 );
+                row2letter( move->start_col ),
+                move->start_row + 1,
+                row2letter( move->end_col ),
+                move->end_row + 1 );
 
     return human_readable;
 }
@@ -105,8 +105,8 @@ struct Move * translate_in_move( const char * move )
     for( i = 0; i < length; i++ )
         if( isalpha( move[ i ] ) )
         {
-            start_row[0] = move[ i ];
-            start_row[1] = '\0';
+            start_col[0] = move[ i ];
+            start_col[1] = '\0';
             valid++;
             break;
         }
@@ -115,8 +115,8 @@ struct Move * translate_in_move( const char * move )
     for( ; i< length; i++ )
         if( isdigit( move[i] ) )
         {
-            start_col[0] = move[ i ];
-            start_col[1] = '\0';
+            start_row[0] = move[ i ];
+            start_row[1] = '\0';
             valid++;
             break;
         }
@@ -125,8 +125,8 @@ struct Move * translate_in_move( const char * move )
     for( ; i < length; i++ )
         if( isalpha( move[ i ] ) )
         {
-            end_row[0] = move[ i ];
-            end_row[1] = '\0';
+            end_col[0] = move[ i ];
+            end_col[1] = '\0';
             valid++;
             break;
         }
@@ -135,8 +135,8 @@ struct Move * translate_in_move( const char * move )
     for( ; i < length; i++ )
         if( isdigit( move[ i ] ) )
         {
-            end_col[0] = move[ i ];
-            end_col[1] = '\0';
+            end_row[0] = move[ i ];
+            end_row[1] = '\0';
             valid++;
             break;
         }
@@ -144,10 +144,18 @@ struct Move * translate_in_move( const char * move )
     if( valid != 4 )
         return NULL;
 
-    struct Move * translated_move = new_move( letter2row( start_row ), 
+    /*
+    struct Move * translated_move = new_move( 
+            letter2row( start_row ), 
             atoi( start_col ) - 1,
             letter2row( end_row ),
             atoi( end_col ) - 1 );
+            */
+    struct Move * translated_move = new_move( 
+            atoi( start_row ) - 1,
+            letter2row( start_col ),
+            atoi( end_row ) - 1,
+            letter2row( end_col ) );
 
     return translated_move;
 }
@@ -230,3 +238,7 @@ void print_move( const struct Move * move )
     Free( human_readable, sizeof( char ) * 11 );
 }
 
+struct Move * clone_move( const struct Move * move )
+{
+    return new_move( move->start_row, move->start_col, move->end_row, move->end_col );
+}

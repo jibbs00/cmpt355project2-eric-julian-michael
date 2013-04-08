@@ -15,8 +15,9 @@
 #include "move.h"
 #include "list.h"
 #include "game_node.h"
+#include "utility.h"
 
-#define MAX_DEPTH 3
+#define MAX_DEPTH 2
 #define THINKING_TIME 10
 
 extern time_t timer;
@@ -452,15 +453,19 @@ int validate_action( const struct State * state, const struct Move * action )
     }
 
     /* check if moves is in possible actions */
+    struct Move * move;
     current = moves->head;
     while( current != NULL )
     {
-        if( compare_move( current->data, action ) == 1 )
+        move = current->data;
+        if( compare_move( move, action ) == 1 )
         {
             is_valid = 1;
             break;
         }
         current = current->next;
+
+        Free( move, sizeof( struct Move ) );
     }
 
     delete_list( &moves );
@@ -477,12 +482,21 @@ int validate_action( const struct State * state, const struct Move * action )
 int terminal_test( const struct State * state )
 {
     /* if there are no more moves for other player, game is done */
-    struct List * moves = new_list();
-
-    moves = actions( state );
+    struct List * moves = actions( state );
 
     /* check if state is terminal */
     int has_move = ( moves->count == 0 );
+
+    struct ListNode * current = moves->head;
+    struct Move * move;
+
+    while( current != NULL )
+    {
+        move = current->data;
+        Free( move, sizeof( struct Move ) );
+
+        current = current->next;
+    }
     delete_list( &moves );
 
     return has_move;
@@ -670,6 +684,7 @@ static int max_value( struct GameNode * game_state, int depth, int alpha, int be
     {
         return eval( game_state->state );
     }
+    struct ListNode * current_b;
 
     ++depth;
     int v = INT_MIN;
@@ -692,19 +707,27 @@ static int max_value( struct GameNode * game_state, int depth, int alpha, int be
         if( min_val > v )
         {
             game_state->best_util_val = v;
-            game_state->best_move = current->data;
+            //game_state->best_move = current->data;
+            game_state->best_move = clone_move( current->data );
         }
 
         v = max( v, min_val );
 
-        //game_state->best_util_val = v;
-        
-        /** WARNING!! */
-        //game_state->best_move = current->data;
-    
         if( v >= beta )
         {
-            game_state->best_move = current->data;
+            //game_state->best_move = current->data;
+            game_state->best_move = clone_move( current->data );
+
+            /* free list of actions except for best move */
+            current_b = a->head;
+            while( current_b != NULL )
+            {
+                //if( compare_move( current_b->data, game_state->best_move ) == 0 )
+                    Free( current_b->data, sizeof( struct Move ) );
+                current_b = current_b->next;
+            }
+
+            delete_list( &a );
             return v;
         }
 
@@ -713,6 +736,16 @@ static int max_value( struct GameNode * game_state, int depth, int alpha, int be
         current = current->next;
     }
 
+    /* free list of actions */
+    current_b = a->head;
+    while( current_b != NULL )
+    {
+        //if( compare_move( current_b->data, game_state->best_move ) == 0 )
+            Free( current_b->data, sizeof( struct Move ) );
+        current_b = current_b->next;
+    }
+
+    delete_list( &a );
     return v;
 }
 
@@ -732,6 +765,7 @@ static int min_value( struct GameNode * game_state, int depth, int alpha, int be
     ++depth;
     int v = INT_MAX;
     int max_val;
+    struct ListNode * current_b;
 
     struct List * a = actions( game_state->state ); /* get possible actions */
     /* iterate over all actions */
@@ -747,19 +781,23 @@ static int min_value( struct GameNode * game_state, int depth, int alpha, int be
         if( max_val < v )
         {
             game_state->best_util_val = v;
-            game_state->best_move = current->data;
+            //game_state->best_move = current->data;
+            game_state->best_move = clone_move( current->data );
         }
 
         v = min( v, max_val );
 
-        //game_state->best_util_val = v;
-        
-        /** WARNING!! */
-        //game_state->best_move = current->data;
-
         if( v <= alpha )
         {
-            game_state->best_move = current->data;
+            game_state->best_move = clone_move( current->data );
+            /* free list of actions except for chosen action */
+            current_b = a->head;
+            while( current_b != NULL )
+            {
+                Free( current_b->data, sizeof( struct Move ) );
+                current_b = current_b->next;
+            }
+            delete_list( &a );
             return v;
         }
 
@@ -768,6 +806,14 @@ static int min_value( struct GameNode * game_state, int depth, int alpha, int be
         current = current->next;
     }
 
+    /* free list of actions */
+    current_b = a->head;
+    while( current_b != NULL )
+    {
+        Free( current_b->data, sizeof( struct Move ) );
+        current_b = current_b->next;
+    }
+    delete_list( &a );
     return v;
 }
 

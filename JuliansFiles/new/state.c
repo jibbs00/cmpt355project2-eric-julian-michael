@@ -65,7 +65,7 @@ void print_state( const struct State * state )
     printf( "\n" );
     printf( "  | " );
     for( int i = 0; i < SIZE; i++ )
-        printf( "%d ", i + 1 );
+        printf( "%c ", row2letter( i ) );
     printf( "\n" );
     printf( "--+" );
     for( int i = 0; i < SIZE; i++ )
@@ -75,7 +75,7 @@ void print_state( const struct State * state )
     for( int i = 0; i < SIZE; i++ )
     {
         //printf( "%d ", i );
-        printf( "%c | ", row2letter( i ) );
+        printf( "%d | ", i + 1 );
         for( int j = 0; j < SIZE; j++ )
             printf( "%c ", state->board[i][j] );
         printf( "\n" );
