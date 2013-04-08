@@ -12,8 +12,12 @@
 
 #define INPUT_SIZE  20 
 
+/** Global timer */
 time_t timer;
 
+/**
+ * Start playing a game of konane
+ */
 int game( void )
 {
 
@@ -41,6 +45,13 @@ int game( void )
     return 1;
 }
 
+/**
+ * Human vs compter
+ *
+ * Plays vs the computer
+ *
+ * @return 1 if human player won, else return 0
+ */
 int human_vs_computer( void )
 {
     char input[ INPUT_SIZE ];
@@ -143,9 +154,16 @@ int human_vs_computer( void )
         }
     }
 
-    return 1;
+    return player == opposite_player( state->player );
 }
 
+/**
+ * Computer vs computer
+ *
+ * The computer plays itself
+ *
+ * return 1 if black wins, else return 0
+ */
 int computer_vs_computer( void )
 {
     char board[ SIZE ][ SIZE ];
@@ -195,11 +213,11 @@ int computer_vs_computer( void )
         printf( "\n" );
         print_state( state );
 
-        printf( "\n>> Mem usage before: %ld\n", memory_usage() );
+        //printf( "\n>> Mem usage before: %lu\n", memory_usage() );
         temp_state = computer_player( state );
         Free( state, sizeof( struct State ) );
         state = temp_state;
-        printf( ">> Mem usage after: %ld\n", memory_usage() );
+        //printf( "\n>> Mem usage after: %lu\n", memory_usage() );
 
         if( terminal_test( state ) == 1 )
         {
@@ -211,9 +229,16 @@ int computer_vs_computer( void )
             break;
         }
     }
-    return 1;
+
+    return opposite_player( state->player ) == 'B';
 }
 
+/**
+ * Human player goes first
+ *
+ * @param game_state the current state of the game
+ * @return a new game state
+ */
 struct State * human_player_first( struct State * game_state )
 {
     char input[ INPUT_SIZE ];
@@ -251,6 +276,12 @@ struct State * human_player_first( struct State * game_state )
     return state;
 }
 
+/**
+ * Human player goes second
+ *
+ * @param game_state the current state of the game
+ * @return a new game state
+ */
 struct State * human_player_second( struct State * game_state )
 {
     char input[ INPUT_SIZE ];
@@ -296,6 +327,12 @@ struct State * human_player_second( struct State * game_state )
     
 }
 
+/**
+ * Computer player goes first
+ *
+ * @param game_state the current state of the game
+ * @return a new game state
+ */
 struct State * computer_player_first( struct State * game_state )
 {
     struct State * state;
@@ -372,6 +409,12 @@ struct State * computer_player_first( struct State * game_state )
 
 }
 
+/**
+ * Computer player goes second
+ *
+ * @param game_state the current game state
+ * @return a new state
+ */
 struct State * computer_player_second( struct State * game_state )
 {
     struct State * state;
@@ -507,7 +550,12 @@ struct State * computer_player_second( struct State * game_state )
     return state;
 }
 
-
+/**
+ * Human player's turn
+ *
+ * @param game_state a game state
+ * @return a new game state
+ */
 struct State * human_player( struct State * game_state )
 {
     char input[ INPUT_SIZE ];
@@ -549,6 +597,12 @@ struct State * human_player( struct State * game_state )
 
 }
 
+/**
+ * Computer player moves
+ *
+ * @param game_state the game state
+ * @return a new game state
+ */
 struct State * computer_player( struct State * game_state )
 {
     struct State * state;
@@ -566,6 +620,7 @@ struct State * computer_player( struct State * game_state )
 
     /* print time */
     printf( "Time taken: %d\n", stop - timer );
+    printf( "Memory used: %lu\n", memory_usage() );
 
     /* print move */
     printf( "Move chosen: " );

@@ -35,7 +35,15 @@ void * Calloc( size_t nmemb, size_t size )
  */
 void Free( void * ptr, size_t size )
 {
-    _memory_usage -= size;
+
+    /* WARNING! UGLY HACK! TRACK DOWN ACTUAL PROBLEM
+     * to stop negative sizes check if subtracting size
+     * from memory would result in negative value
+     */
+    if( _memory_usage < size )
+        _memory_usage = 0;
+    else
+        _memory_usage -= size;
 
     free( ptr );
 }

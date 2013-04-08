@@ -15,6 +15,8 @@
 #include "move.h"
 #include "utility.h"
 
+#define STR_LEN 12
+
 /**
  * Create a new move
  *
@@ -61,10 +63,10 @@ char row2letter( int i )
  */
 char * translate_move( const struct Move * move )
 {
-    char * human_readable = Calloc( 11, sizeof( char ) );
+    char * human_readable = Calloc( STR_LEN, sizeof( char ) );
     assert( human_readable );
     
-    snprintf( human_readable, 11, "%c%d - %c%d",
+    snprintf( human_readable, STR_LEN, "%c%d - %c%d",
                 row2letter( move->start_col ),
                 move->start_row + 1,
                 row2letter( move->end_col ),
@@ -242,7 +244,7 @@ void print_move( const struct Move * move )
 
     printf( "%s", human_readable );
 
-    Free( human_readable, sizeof( char ) * 11 );
+    Free( human_readable, sizeof( char ) * STR_LEN );
 }
 
 /**
