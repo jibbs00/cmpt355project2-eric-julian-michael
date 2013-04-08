@@ -160,6 +160,12 @@ struct Move * translate_in_move( const char * move )
     return translated_move;
 }
 
+/**
+ * Translate a beginning move to coordinates
+ *
+ * @param move a string consisting of the human input (will only read one piece)
+ * @return a move consisting of one piece
+ */
 struct Move * translate_first_in_move( const char * move )
 {
     int length = strnlen( move, 20 );
@@ -172,8 +178,8 @@ struct Move * translate_first_in_move( const char * move )
     for( i = 0; i < length; i++ )
         if( isalpha( move[ i ] ) )
         {
-            start_row[0] = move[ i ];
-            start_row[1] = '\0';
+            start_col[0] = move[ i ];
+            start_col[1] = '\0';
             valid++;
             break;
         }
@@ -182,8 +188,8 @@ struct Move * translate_first_in_move( const char * move )
     for( ; i< length; i++ )
         if( isdigit( move[i] ) )
         {
-            start_col[0] = move[ i ];
-            start_col[1] = '\0';
+            start_row[0] = move[ i ];
+            start_row[1] = '\0';
             valid++;
             break;
         }
@@ -192,9 +198,10 @@ struct Move * translate_first_in_move( const char * move )
     if( valid != 2 )
         return NULL;
 
-    struct Move * translated_move = new_move( letter2row( start_row ), 
-            atoi( start_col ) - 1,
-            0 ,
+    struct Move * translated_move = new_move( 
+            atoi( start_row ) - 1,
+            letter2row( start_col ),
+            0,
             0 );
 
     return translated_move;
@@ -238,6 +245,12 @@ void print_move( const struct Move * move )
     Free( human_readable, sizeof( char ) * 11 );
 }
 
+/**
+ * Clone a move
+ *
+ * @param move a move to clone
+ * @return a duplicate move
+ */
 struct Move * clone_move( const struct Move * move )
 {
     return new_move( move->start_row, move->start_col, move->end_row, move->end_col );
