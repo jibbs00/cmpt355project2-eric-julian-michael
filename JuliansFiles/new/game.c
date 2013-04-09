@@ -18,7 +18,7 @@ time_t timer;
 /**
  * Start playing a game of konane
  */
-int game( void )
+int game( char *file )
 {
 
     /* human or computer player */
@@ -35,11 +35,11 @@ int game( void )
 
     if( option[0] == 'a' )
     {
-        human_vs_computer();
+        human_vs_computer(file);
     }
     else
     {
-        computer_vs_computer();
+        computer_vs_computer(file);
     }
 
     return 1;
@@ -49,37 +49,17 @@ int game( void )
  * Human vs compter
  *
  * Plays vs the computer
- *
+ * @param string for filename
  * @return 1 if human player won, else return 0
  */
-int human_vs_computer( void )
+int human_vs_computer( char *file )
 {
     char input[ INPUT_SIZE ];
     char board[ SIZE ][ SIZE ];
     char player;
 
     /* set up board */
-    int _player = 0;
-    for( int i = 0; i < 8 ; i++ )
-    {
-        for( int j = 0; j < 8; j++ )
-        {
-            if( _player == 0 )
-            {
-                board[i][j] = 'B';
-                _player = 1;
-            }
-            else
-            {
-                board[i][j] = 'W';
-                _player = 0;
-            }
-        }
-        if( _player == 0 )
-            _player = 1;
-        else
-            _player = 0;
-    }
+    setup_board(file,board);
 
     /* choose player */
     do 
@@ -161,35 +141,16 @@ int human_vs_computer( void )
  * Computer vs computer
  *
  * The computer plays itself
- *
- * return 1 if black wins, else return 0
+ * @param string for filename
+ * @return 1 if black wins, else return 0
  */
-int computer_vs_computer( void )
+int computer_vs_computer( char *file )
 {
     char board[ SIZE ][ SIZE ];
 
     /* set up board */
-    int _player = 0;
-    for( int i = 0; i < 8 ; i++ )
-    {
-        for( int j = 0; j < 8; j++ )
-        {
-            if( _player == 0 )
-            {
-                board[i][j] = 'B';
-                _player = 1;
-            }
-            else
-            {
-                board[i][j] = 'W';
-                _player = 0;
-            }
-        }
-        if( _player == 0 )
-            _player = 1;
-        else
-            _player = 0;
-    }
+    setup_board(file,board);
+
     /* create a new state */
     struct State * state = new_state( board, 'B' );
     struct State * temp_state;

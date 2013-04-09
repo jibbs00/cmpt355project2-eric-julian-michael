@@ -8,6 +8,10 @@
 
 #include <stdlib.h>
 
+#define SIZE 8
+
+void setup_board(char *filename,char board[][SIZE]);
+
 void * Calloc( size_t nmemb, size_t size );
 void Free( void * ptr, size_t size );
 unsigned long memory_usage( void );

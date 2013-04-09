@@ -3,10 +3,44 @@
  * @author Julian Martinez del Campo
  * @brief this file implements utility.h
  */
+#include <stdio.h>
 #include <stdlib.h>
 #include "utility.h"
 
 static unsigned long _memory_usage = 0;
+
+/**
+ * setup_board
+ *
+ * This funciton reads a file an places each character
+ * read into the global board
+ *
+ * @param string for the filename
+ * @return initialized global board state
+ */
+void setup_board(char *filename, char board[][SIZE])
+{
+  FILE *fh = fopen(filename,"r");
+  if(fh == NULL){
+    printf("could not open file %s\n",filename);
+    exit(EXIT_FAILURE);
+  }
+
+  char c;
+  int x = 0, y = 0;
+  while((c = fgetc(fh)) != EOF){
+    if(c == '\n'){
+      x++;
+      y = 0;
+      continue;
+    }
+    board[x][y] = c;
+    y++;
+  }
+  
+  fclose(fh);
+}
+
 
 /**
  * Calloc

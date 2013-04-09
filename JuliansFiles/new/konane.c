@@ -17,7 +17,7 @@
 #include "game_node.h"
 #include "utility.h"
 
-#define MAX_DEPTH 5
+#define MAX_DEPTH 3
 /*#define MEMORYSIZE 1000000 */
 #define MEMORYSIZE 10000000
 #define THINKING_TIME 10

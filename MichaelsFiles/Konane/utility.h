@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 
-#define SIZE 8
+u#define SIZE 8
 
 void setup_board(char *filename,char board[][SIZE]);
 
