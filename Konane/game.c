@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 #include <time.h>
 
 #include "game.h"
@@ -18,28 +19,46 @@ time_t timer;
 /**
  * Start playing a game of konane
  */
-int game( char *file )
+int game( char *file, char agent_color )
 {
+    char input[ INPUT_SIZE ];
+    agent_color = toupper( agent_color );
 
-    /* human or computer player */
-    printf( "Play konane:\n" );
-    printf( " a) play computer\n" );
-    printf( " b) computer vs computer\n" );
-    char option[ INPUT_SIZE ];
-    do
+    if( agent_color != 'B' && agent_color != 'W' )
     {
-        printf( "Please choose an option: " );
-        fgets( option, INPUT_SIZE, stdin );
-    }
-    while( option[ 0 ] != 'a' && option[ 0 ] != 'b' );
+        /* human or computer player */
+        printf( "Play konane:\n" );
+        printf( " a) play computer\n" );
+        printf( " b) computer vs computer\n" );
+        char option[ INPUT_SIZE ];
+        do
+        {
+            printf( "Please choose an option: " );
+            fgets( option, INPUT_SIZE, stdin );
+        }
+        while( option[ 0 ] != 'a' && option[ 0 ] != 'b' );
 
-    if( option[0] == 'a' )
-    {
-        human_vs_computer(file);
+
+        if( option[0] == 'a' )
+        {
+            /* choose player */
+            do 
+            {
+                printf( "Please choose a player ('B' or 'W' ): " );
+                fgets( input, INPUT_SIZE, stdin );
+            }
+            while( input[ 0 ] != 'W' && input[ 0 ] != 'B' );
+            char player = input[0];
+            human_vs_computer(file, opposite_player( player ));
+        }
+        else
+        {
+            computer_vs_computer(file, option[ 0]);
+        }
     }
     else
     {
-        computer_vs_computer(file);
+        human_vs_computer( file, agent_color );
     }
 
     return 1;
@@ -50,25 +69,17 @@ int game( char *file )
  *
  * Plays vs the computer
  * @param string for filename
+ * @param agent_color the agent color
  * @return 1 if human player won, else return 0
  */
-int human_vs_computer( char *file )
+int human_vs_computer( char *file, char agent_color )
 {
-    char input[ INPUT_SIZE ];
     char board[ SIZE ][ SIZE ];
-    char player;
+    char player = toupper( agent_color );
 
     /* set up board */
     setup_board(file,board);
 
-    /* choose player */
-    do 
-    {
-        printf( "Please choose a player ('B' or 'W' ): " );
-        fgets( input, INPUT_SIZE, stdin );
-    }
-    while( input[ 0 ] != 'W' && input[ 0 ] != 'B' );
-    player = input[0];
 
     /* create a new state */
     struct State * state = new_state( board, 'B' );
@@ -79,15 +90,15 @@ int human_vs_computer( char *file )
 
     /* start game ( B first ) */
     struct State * temp_state;
-    if( player == 'B' )
+    if( player == state->player )
     {
-        temp_state = human_player_first( state );
+        temp_state = computer_player_first( state );
         Free( state, sizeof( struct State ) );
         state = temp_state;
     }
     else
     {
-        temp_state = computer_player_first( state );
+        temp_state = human_player_first( state );
         Free( state, sizeof( struct State ) );
         state = temp_state;
     }
@@ -95,15 +106,15 @@ int human_vs_computer( char *file )
     /* second move */
     printf( "\n" );
     print_state( state );
-    if( player == 'W' )
+    if( player == state->player )
     {
-        temp_state = human_player_second( state );
+        temp_state = computer_player_second( state );
         Free( state, sizeof( struct State ) );
         state = temp_state;
     }
     else
     {
-        temp_state = computer_player_second( state );
+        temp_state = human_player_second( state );
         Free( state, sizeof( struct State ) );
         state = temp_state;
     }
@@ -116,13 +127,13 @@ int human_vs_computer( char *file )
 
         if( state->player == player )
         {
-            temp_state = human_player( state );
+            temp_state = computer_player( state );
             Free( state, sizeof( struct State ) );
             state = temp_state;
         }
         else
         {
-            temp_state = computer_player( state );
+            temp_state = human_player( state );
             Free( state, sizeof( struct State ) );
             state = temp_state;
         }
@@ -142,9 +153,10 @@ int human_vs_computer( char *file )
  *
  * The computer plays itself
  * @param string for filename
+ * @param agent_color
  * @return 1 if black wins, else return 0
  */
-int computer_vs_computer( char *file )
+int computer_vs_computer( char *file, char agent_color )
 {
     char board[ SIZE ][ SIZE ];
 
@@ -232,7 +244,7 @@ struct State * human_player_first( struct State * game_state )
 
     /* apply move */
     state->board[ move->start_row ][ move->start_col ] = 'O';
-    print_move( move );
+    print_single_move( move );
 
     return state;
 }
@@ -276,7 +288,7 @@ struct State * human_player_second( struct State * game_state )
     while( 1 );
 
     printf( "Move chosen: " );
-    print_move( move );
+    print_single_move( move );
 
     /* create a new state */
     state = new_state( game_state->board, opposite_player( game_state->player ) );
@@ -358,7 +370,7 @@ struct State * computer_player_first( struct State * game_state )
 
     /* print move */
     printf( "Move chosen: " );
-    print_move( move );
+    print_single_move( move );
 
     /* create new state */
     state = new_state( game_state->board, opposite_player( game_state->player ) );
@@ -501,7 +513,7 @@ struct State * computer_player_second( struct State * game_state )
 
     /* print move */
     printf( "Move chosen: " );
-    print_move( move );
+    print_single_move( move );
 
     /* create new state */
     state = new_state( game_state->board, opposite_player( game_state->player ) );

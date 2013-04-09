@@ -20,8 +20,10 @@ char * translate_move( const struct Move * move );
 struct Move * clone_move( const struct Move * move );
 struct Move * translate_in_move( const char * move );
 struct Move * translate_first_in_move( const char * move );
+char * translate_first_move( const struct Move * move );
 int compare_move( const struct Move * a, const struct Move * b );
 void print_move( const struct Move * move );
+void print_single_move( const struct Move * move );
 char row2letter( int i );
 
 #endif /* _MOVE_H_ */

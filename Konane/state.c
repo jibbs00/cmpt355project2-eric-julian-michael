@@ -75,7 +75,7 @@ void print_state( const struct State * state )
     for( int i = 0; i < SIZE; i++ )
     {
         //printf( "%d ", i );
-        printf( "%d | ", i + 1 );
+        printf( "%d | ", SIZE - i );
         for( int j = 0; j < SIZE; j++ )
             printf( "%c ", state->board[i][j] );
         printf( "\n" );

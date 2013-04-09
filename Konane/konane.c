@@ -17,7 +17,7 @@
 #include "game_node.h"
 #include "utility.h"
 
-#define MAX_DEPTH 5
+#define MAX_DEPTH 15
 #define MEMORYSIZE 1000000
 #define THINKING_TIME 10
 
@@ -493,6 +493,13 @@ char opposite_player( char player )
     return 'B';
 }
 
+/**
+ * Validate the first move
+ *
+ * @param state a state to validate
+ * @param action an action
+ * @return 1 if move is valid, else return 0
+ */
 int validate_first_in_move( const struct State * state, const struct Move * action )
 {
     if( ((action->start_row == 3) && (action->start_col == 3)) ||
@@ -511,6 +518,13 @@ int validate_first_in_move( const struct State * state, const struct Move * acti
     return 0;
 }
 
+/**
+ * Validate second move
+ *
+ * @param state a state to validate
+ * @param action an action
+ * @return 1 if move is valid, else return 0
+ */
 int validate_second_in_move( const struct State * state, const struct Move * action )
 {
     int i, j;
@@ -562,16 +576,39 @@ int validate_second_in_move( const struct State * state, const struct Move * act
     return 0;
 }
 
+/**
+ * Get max of a or b
+ *
+ * @param a
+ * @param b
+ * @return the max value
+ */
 static int max( int a, int b )
 {
     return a > b ? a : b;
 }
 
+/**
+ * Get min of a or b
+ *
+ * @param a
+ * @param b
+ * @return the min value
+ */
 static int min( int a, int b )
 {
     return a < b ? a : b;
 }
 
+/**
+ * Max of alpha beta
+ *
+ * @param game_state the current game tree state
+ * @param depth the depth of the tree
+ * @param alpha
+ * @param beta
+ * @return a utility value
+ */
 static int max_value( struct GameNode * game_state, int depth, int alpha, int beta )
 {
     time_t current_time;
@@ -652,6 +689,15 @@ static int max_value( struct GameNode * game_state, int depth, int alpha, int be
     return v;
 }
 
+/**
+ * Min of alpha beta
+ *
+ * @param game_state the current game tree state
+ * @param depth the depth of the tree
+ * @param alpha
+ * @param beta
+ * @return a utility value
+ */
 static int min_value( struct GameNode * game_state, int depth, int alpha, int beta )
 {
     time_t current_time;
@@ -721,6 +767,13 @@ static int min_value( struct GameNode * game_state, int depth, int alpha, int be
     return v;
 }
 
+/**
+ * Perform a cutoff test
+ *
+ * @param state the state of the game
+ * @param depth the current depth
+ * @return 1 if depth has exceeded max depth, or if terminal state has been reached, else return 0
+ */
 int cutoff_test( const struct State * state, int depth )
 {
     if( depth > MAX_DEPTH )
@@ -729,6 +782,12 @@ int cutoff_test( const struct State * state, int depth )
     return terminal_test( state );
 }
 
+/**
+ * Alpha beta search with time, memory, and depth cutoff
+ *
+ * @param game_state a game tree root
+ * @return a move
+ */
 struct Move * alpha_beta_search( struct GameNode * game_state )
 {
     int v = max_value( game_state, 0, INT_MIN, INT_MAX );

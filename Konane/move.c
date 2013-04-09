@@ -68,9 +68,27 @@ char * translate_move( const struct Move * move )
     
     snprintf( human_readable, STR_LEN, "%c%d - %c%d",
                 row2letter( move->start_col ),
-                move->start_row + 1,
+                SIZE - move->start_row,
                 row2letter( move->end_col ),
-                move->end_row + 1 );
+                SIZE - move->end_row );
+
+    return human_readable;
+}
+
+/**
+ * Translate a move into a string
+ *
+ * @param move a move to convert to string
+ * @return a string in human readable form
+ */
+char * translate_first_move( const struct Move * move )
+{
+    char * human_readable = Calloc( STR_LEN, sizeof( char ) );
+    assert( human_readable );
+    
+    snprintf( human_readable, STR_LEN, "%c%d",
+                row2letter( move->start_col ),
+                SIZE - move->start_row );
 
     return human_readable;
 }
@@ -154,9 +172,9 @@ struct Move * translate_in_move( const char * move )
             atoi( end_col ) - 1 );
             */
     struct Move * translated_move = new_move( 
-            atoi( start_row ) - 1,
+            SIZE - atoi( start_row ),
             letter2row( start_col ),
-            atoi( end_row ) - 1,
+            SIZE - atoi( end_row ),
             letter2row( end_col ) );
 
     return translated_move;
@@ -201,7 +219,7 @@ struct Move * translate_first_in_move( const char * move )
         return NULL;
 
     struct Move * translated_move = new_move( 
-            atoi( start_row ) - 1,
+            SIZE - atoi( start_row ),
             letter2row( start_col ),
             0,
             0 );
@@ -241,6 +259,20 @@ void print_move( const struct Move * move )
     */
     
     char * human_readable = translate_move( move );
+
+    printf( "%s", human_readable );
+
+    Free( human_readable, sizeof( char ) * STR_LEN );
+}
+
+/**
+ * Print first/second move
+ *
+ * @param move a move to print
+ */
+void print_single_move( const struct Move * move )
+{
+    char * human_readable = translate_first_move( move );
 
     printf( "%s", human_readable );
 

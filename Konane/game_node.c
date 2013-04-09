@@ -6,6 +6,13 @@
 #include "list.h"
 #include "utility.h"
 
+/**
+ * Create a new game node
+ *
+ * @param state a game state
+ * @param parent the parent node
+ * @return a new game node with state and parent set
+ */
 struct GameNode * new_game_node( struct State * state, struct GameNode * parent )
 {
     struct GameNode * node = Calloc( 1, sizeof( struct GameNode ) );
@@ -18,32 +25,23 @@ struct GameNode * new_game_node( struct State * state, struct GameNode * parent 
     return node;
 }
 
+/**
+ * Add a child to a game node
+ *
+ * @param parent a parent node
+ * @param child the child node to add to parent
+ */
 void add_child_game_node( struct GameNode * parent, struct GameNode * child )
 {
     child->parent = parent;
     add_front( &parent->children, child );
 }
 
-void delete_children_game_node( struct GameNode * parent )
-{
-    struct List * children = parent->children;
-    struct ListNode * current;
-
-    if( parent == NULL )
-        return;
-    
-    for( current = children->head;
-         current != NULL;
-         current = current->next )
-    {
-        delete_children_game_node( current->data );
-    }
-
-    delete_list( &children );
-    
-    Free( parent, sizeof( struct GameNode ) );
-}
-
+/**
+ * Delete a game node
+ *
+ * @param root a game tree root
+ */
 void delete_game_node( struct GameNode ** root )
 {
     if( *root == NULL )
