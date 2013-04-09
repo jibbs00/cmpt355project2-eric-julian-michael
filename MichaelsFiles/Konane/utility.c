@@ -3,6 +3,7 @@
  * @author Julian Martinez del Campo
  * @brief this file implements utility.h
  */
+#include <stdio.h>
 #include <stdlib.h>
 #include "utility.h"
 
@@ -17,7 +18,7 @@ static unsigned long _memory_usage = 0;
  * @param string for the filename
  * @return initialized global board state
  */
-void setup_board(char *filename)
+void setup_board(char *filename, char board[][SIZE])
 {
   FILE *fh = fopen(filename,"r");
   if(fh == NULL){

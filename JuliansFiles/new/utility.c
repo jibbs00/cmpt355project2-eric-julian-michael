@@ -20,9 +20,9 @@ static unsigned long _memory_usage = 0;
  */
 void * Calloc( size_t nmemb, size_t size )
 {
-    _memory_usage += (nmemb * size);
+  _memory_usage += (nmemb * size);
 
-    return calloc( nmemb, size );
+  return calloc( nmemb, size );
 }
 
 /**
@@ -35,9 +35,9 @@ void * Calloc( size_t nmemb, size_t size )
  */
 void Free( void * ptr, size_t size )
 {
-    _memory_usage -= size;
+  _memory_usage -= size;
 
-    free( ptr );
+  free( ptr );
 }
 
 /**
@@ -47,5 +47,5 @@ void Free( void * ptr, size_t size )
  */
 unsigned long memory_usage( void )
 {
-    return _memory_usage;
+  return _memory_usage;
 }

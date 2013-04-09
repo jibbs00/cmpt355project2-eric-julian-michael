@@ -5,10 +5,10 @@
 #include "move.h"
 #include "state.h"
 
-int game( void );
+int game( char *file );
 
-int human_vs_computer( void );
-int computer_vs_computer( void );
+int human_vs_computer( char *file );
+int computer_vs_computer( char *file );
 
 struct State * human_player_first( struct State * game_state );
 struct State * computer_player_first( struct State * game_state );

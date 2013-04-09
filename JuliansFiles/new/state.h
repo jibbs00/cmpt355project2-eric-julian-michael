@@ -11,8 +11,8 @@
 
 /** state */
 struct State {
-    char player;            /**< current player */
-    char board[SIZE][SIZE]; /**< board layout */
+  char player;            /**< current player */
+  char board[SIZE][SIZE]; /**< board layout */
 };
 
 struct State * new_state( char board[][SIZE], char player );

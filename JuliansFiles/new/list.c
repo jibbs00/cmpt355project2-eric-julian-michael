@@ -17,13 +17,13 @@
  */
 struct List * new_list( void )
 {
-    struct List * list = Calloc( 1, sizeof( struct List ) );
+  struct List * list = Calloc( 1, sizeof( struct List ) );
 
-    list->head = NULL;
-    list->tail = NULL;
-    list->count = 0;
+  list->head = NULL;
+  list->tail = NULL;
+  list->count = 0;
 
-    return list;
+  return list;
 }
 
 /**
@@ -33,19 +33,19 @@ struct List * new_list( void )
  */
 void delete_list( struct List ** list )
 {
-    struct ListNode * current, * temp;
+  struct ListNode * current, * temp;
 
-    current = (*list)->head;
-    while( current != NULL )
+  current = (*list)->head;
+  while( current != NULL )
     {
-        temp = current;
-        current = current->next;
+      temp = current;
+      current = current->next;
 
-        Free( temp, sizeof( struct ListNode ) );
+      Free( temp, sizeof( struct ListNode ) );
     }
 
-    Free( (*list ), sizeof( struct List ) );
-    *list = NULL;
+  Free( (*list ), sizeof( struct List ) );
+  *list = NULL;
 }
 
 /**
@@ -56,20 +56,20 @@ void delete_list( struct List ** list )
  */
 void add_front( struct List ** list, void * data )
 {
-    struct ListNode * node = Calloc( 1, sizeof( struct ListNode ) );
-    assert( node );
+  struct ListNode * node = Calloc( 1, sizeof( struct ListNode ) );
+  assert( node );
 
-    node->data = data;
-    node->next = (*list)->head;
+  node->data = data;
+  node->next = (*list)->head;
 
-    if( (*list)->count == 0 )
+  if( (*list)->count == 0 )
     {
-        (*list)->tail = node;
-        (*list)->head = node;
+      (*list)->tail = node;
+      (*list)->head = node;
     }
-    else
+  else
     {
-        (*list)->head = node;
+      (*list)->head = node;
     }
-    (*list)->count++;
+  (*list)->count++;
 }

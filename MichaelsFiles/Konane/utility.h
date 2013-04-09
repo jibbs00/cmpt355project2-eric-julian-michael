@@ -8,7 +8,9 @@
 
 #include <stdlib.h>
 
-void setup_board(char *filename);
+#define SIZE 8
+
+void setup_board(char *filename,char board[][SIZE]);
 
 void * Calloc( size_t nmemb, size_t size );
 void Free( void * ptr, size_t size );

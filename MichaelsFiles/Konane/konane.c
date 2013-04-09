@@ -18,6 +18,7 @@
 #include "utility.h"
 
 #define MAX_DEPTH 10
+#define MEMORYSIZE 1000000
 #define THINKING_TIME 10
 
 extern time_t timer;
@@ -461,7 +462,6 @@ int validate_action( const struct State * state, const struct Move * action )
         if( compare_move( move, action ) == 1 )
         {
             is_valid = 1;
-            break;
         }
         current = current->next;
 
@@ -500,11 +500,6 @@ int terminal_test( const struct State * state )
     delete_list( &moves );
 
     return has_move;
-}
-
-int utility( const struct State * state )
-{
-    return 0;
 }
 
 //will evaluate the board and return a number based on the
@@ -572,7 +567,12 @@ static int evaluation (char fcolor, char ecolor, char board[][BOARD_SIZE]) {
  return tc;
 }
 
-
+/**
+ * Call the evaluation function
+ *
+ * @param state a state to evaluate
+ * @return the utility value of the state
+ */
 int eval( struct State * state )
 {
     return evaluation( opposite_player( state->player), state->player, state->board ) - 
@@ -676,11 +676,8 @@ static int max_value( struct GameNode * game_state, int depth, int alpha, int be
     time_t current_time;
     time( &current_time );
 
-    if( (current_time - timer) > THINKING_TIME - 1 )
-    {
-        return eval( game_state->state );
-    }
-    if( cutoff_test( game_state->state, depth ) )
+    if( ( (current_time - timer) > THINKING_TIME - 1 ) ||
+           cutoff_test( game_state->state, depth ) )
     {
         return eval( game_state->state );
     }
@@ -754,12 +751,8 @@ static int min_value( struct GameNode * game_state, int depth, int alpha, int be
     time_t current_time;
     time( &current_time );
 
-    if( (current_time - timer) > THINKING_TIME - 1 )
-    {
-        return eval( game_state->state );
-    }
-
-    if( cutoff_test( game_state->state, depth ) )
+    if( ( (current_time - timer) > THINKING_TIME - 1 ) ||
+           cutoff_test( game_state->state, depth ) )
         return eval( game_state->state );
 
     ++depth;

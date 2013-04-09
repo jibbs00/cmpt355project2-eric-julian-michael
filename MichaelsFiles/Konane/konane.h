@@ -14,7 +14,6 @@ struct List * actions( const struct State * state );
 struct State * result( const struct State * state, const struct Move * action );
 int validate_action( const struct State * state, const struct Move * action );
 int terminal_test( const struct State * state );
-int utility( const struct State * state );
 char opposite_player( char player );
 
 int validate_first_in_move( const struct State * state, const struct Move * action );
