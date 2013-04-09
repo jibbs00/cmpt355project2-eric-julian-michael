@@ -518,7 +518,7 @@ struct State * human_player( struct State * game_state )
     char input[ INPUT_SIZE ];
     struct State * state;
     struct Move * move;
-    struct GameNode * root;
+    //struct GameNode * root;
 
     /* get input */
     do 
