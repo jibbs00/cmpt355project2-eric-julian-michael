@@ -71,4 +71,5 @@ void delete_game_node( struct GameNode ** root )
     }
     
     Free( *root, sizeof( struct GameNode ) );
+    *root = NULL;
 }
